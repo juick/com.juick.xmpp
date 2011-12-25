@@ -90,7 +90,7 @@ public class XmppConnectionClient extends XmppConnection implements IqListener {
     }
 
     @Override
-    public void onIq(Iq iq) {
+    public boolean onIq(Iq iq) {
         if (!iq.childs.isEmpty() && ((ChildElement) iq.childs.firstElement()).getXMLNS().equals(ResourceBinding.XMLNS)) {
             ResourceBinding rb = (ResourceBinding) iq.childs.firstElement();
             if (rb.jid != null) {
@@ -100,7 +100,9 @@ public class XmppConnectionClient extends XmppConnection implements IqListener {
                 XmppListener xl = (XmppListener) e.nextElement();
                 xl.onAuth(jid.Resource);
             }
+            return true;
         }
+        return false;
     }
 }
 

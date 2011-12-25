@@ -57,6 +57,16 @@ public class Iq extends Stanza {
         reply.type = Type.result;
         return reply;
     }
+    
+    public Iq error() {
+        // TODO: implement other types
+        Iq error = new Iq();
+        error.from = to;
+        error.to = from;
+        error.id = this.id;
+        error.type = Type.error;        
+        return error;
+    }
 
     public static Iq parse(XmlPullParser parser) throws XmlPullParserException, java.io.IOException {
         Iq iq = new Iq();
@@ -83,6 +93,9 @@ public class Iq extends Stanza {
         String str = "<" + TagName + super.toString() + ">";
         for (Enumeration e = childs.elements(); e.hasMoreElements();) {
             str += e.nextElement().toString();
+        }
+        if (type.equals(Type.error)) {
+            str += "<error type='cancel'><service-unavailable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas' /></error>";
         }
         str += "</" + TagName + ">";
         return str;

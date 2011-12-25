@@ -21,7 +21,8 @@ package com.juick.xmpp;
  *
  * @author Ugnich Anton
  */
-public interface IqListener {
+public interface IqListener {    
+    
 
-    public void onIq(final Iq iq);
+    public boolean onIq(final Iq iq);
 }
