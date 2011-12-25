@@ -174,16 +174,20 @@ public abstract class XmppConnection extends Thread {
             } else if (tag.equals("iq")) {
                 Iq iq = Iq.parse(parser);
                 final String key = iq.from.toString() + "\n" + iq.id;
+                boolean parsed = false;
                 if (listenersIqId.containsKey(key)) {
                     IqListener l = (IqListener) listenersIqId.get(key);
-                    l.onIq(iq);
+                    parsed |= l.onIq(iq);
                     listenersIqId.remove(key);
                 } else {
                     for (Enumeration e = listenersIq.elements(); e.hasMoreElements();) {
                         IqListener l = (IqListener) e.nextElement();
-                        l.onIq(iq);
+                        parsed |= l.onIq(iq);
                     }
                 }
+                if (!parsed) {
+                    send(iq.error());
+                }                    
             } else {
                 XmlUtils.skip(parser);
             }
