@@ -44,22 +44,27 @@ public abstract class XmppConnection extends Thread {
     Vector listenersIq = new Vector();
     Hashtable listenersIqId = new Hashtable();
     boolean loggedIn;
+    Socket connection;
 
     public boolean openStreams(final String host, int port, boolean use_ssl) {
         try {
-            Socket connection;
             if (!use_ssl) {
                 connection = new Socket(host, port);
             } else {
                 connection = SSLSocketFactory.getDefault().createSocket(host, port);
             }
-            parser = new MXParser();
-            parser.setInput(new InputStreamReader(connection.getInputStream()));
+            restartParser();
             writer = new OutputStreamWriter(connection.getOutputStream());
         } catch (Exception e) {
             return false;
         }
         return true;
+    }
+
+    public void restartParser() throws XmlPullParserException, IOException {
+        parser = new MXParser();
+        parser.setInput(new InputStreamReader(connection.getInputStream()));
+        parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
     }
 
     public XmppConnection(final JID jid, final String password, final String server, final int port, final boolean use_ssl) {
@@ -173,6 +178,9 @@ public abstract class XmppConnection extends Thread {
                 }
             } else if (tag.equals("iq")) {
                 Iq iq = Iq.parse(parser);
+                if (iq.from == null) {
+                    iq.from = new JID(this.jid.Host);
+                }
                 final String key = iq.from.toString() + "\n" + iq.id;
                 boolean parsed = false;
                 if (listenersIqId.containsKey(key)) {
@@ -187,7 +195,7 @@ public abstract class XmppConnection extends Thread {
                 }
                 if (!parsed) {
                     send(iq.error());
-                }                    
+                }
             } else {
                 XmlUtils.skip(parser);
             }

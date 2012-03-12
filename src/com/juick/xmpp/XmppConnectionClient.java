@@ -29,6 +29,8 @@ import org.xmlpull.v1.XmlPullParserException;
  */
 public class XmppConnectionClient extends XmppConnection implements IqListener {
 
+    public final static String XMLNS = "urn:ietf:params:xml:ns:xmpp-session";
+
     public XmppConnectionClient(final JID jid, final String password, final String server, final int port, final boolean use_ssl) {
         super(jid, password, server, port, use_ssl);
     }
@@ -37,7 +39,7 @@ public class XmppConnectionClient extends XmppConnection implements IqListener {
     public void login() throws XmlPullParserException, IOException {
         String msg = "<stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' to='" + jid.Host + "' version='1.0'>";
         writer.write(msg);
-
+        writer.flush();
         parser.next(); // stream:stream
 
         XmppStreamFeatures features = XmppStreamFeatures.parse(parser);
@@ -54,6 +56,7 @@ public class XmppConnectionClient extends XmppConnection implements IqListener {
         byte[] auth_msg = (jid.Bare() + '\0' + jid.Username + '\0' + password).getBytes();
         msg = msg + Base64.encode(auth_msg) + "</auth>";
         writer.write(msg);
+        writer.flush();
         parser.next();
         if (parser.getName().equals("success")) {
             do {
@@ -71,28 +74,44 @@ public class XmppConnectionClient extends XmppConnection implements IqListener {
 
         msg = "<stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' to='" + jid.Host + "' version='1.0'>";
         writer.write(msg);
+        writer.flush();
+        restartParser();
         do {
             parser.next();
-        } while (!(parser.getEventType() == XmlPullParser.END_TAG && parser.getName().equals("stream:features")));
+        } while (!(parser.getEventType() == XmlPullParser.END_TAG && parser.getName().equals("features")));
 
         Iq bind = new Iq();
         bind.type = Iq.Type.set;
         ResourceBinding rb = new ResourceBinding();
+        addListener(this.server, bind.id, this);
+
         if (jid.Resource != null && jid.Resource.length() > 0) {
-            addListener("", bind.id, this);
             rb.resource = jid.Resource;
         }
         bind.addChild(rb);
         writer.write(bind.toString());
+        writer.flush();
+    }
 
-        msg = "<iq type='set' id='sess'><session xmlns='urn:ietf:params:xml:ns:xmpp-session'/></iq>";
-        writer.write(msg);
+    protected void session() {
+        try {
+            String msg = "<iq type='set' id='sess'><session xmlns='" + XMLNS + "'/></iq>";
+            writer.write(msg);
+            writer.flush();
+        } catch (final Exception ex) {
+            System.err.println(ex);
+            connectionFailed(ex.toString());
+        }
     }
 
     @Override
     public boolean onIq(Iq iq) {
-        if (!iq.childs.isEmpty() && ((ChildElement) iq.childs.firstElement()).getXMLNS().equals(ResourceBinding.XMLNS)) {
-            ResourceBinding rb = (ResourceBinding) iq.childs.firstElement();
+        if (iq.childs.isEmpty()) {
+            return false;
+        }
+        String xmlns = ((ChildElement) iq.childs.get(0)).getXMLNS();
+        if (xmlns.equals(ResourceBinding.XMLNS)) {
+            ResourceBinding rb = (ResourceBinding) iq.childs.get(0);
             if (rb.jid != null) {
                 jid.Resource = rb.jid.Resource;
             }
@@ -100,6 +119,12 @@ public class XmppConnectionClient extends XmppConnection implements IqListener {
                 XmppListener xl = (XmppListener) e.nextElement();
                 xl.onAuth(jid.Resource);
             }
+            session();
+
+            return true;
+        }
+        if (xmlns.equals(XMLNS)) {
+            // no-op since rfc6120
             return true;
         }
         return false;
