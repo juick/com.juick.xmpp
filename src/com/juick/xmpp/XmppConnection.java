@@ -38,11 +38,11 @@ public abstract class XmppConnection extends Thread {
     private boolean use_ssl;
     protected XmlPullParser parser;
     protected OutputStreamWriter writer;
-    Vector listenersXmpp = new Vector();
-    Vector listenersMessage = new Vector();
-    Vector listenersPresence = new Vector();
-    Vector listenersIq = new Vector();
-    Hashtable listenersIqId = new Hashtable();
+    ArrayList<XmppListener> listenersXmpp = new ArrayList<XmppListener>();
+    ArrayList<MessageListener> listenersMessage = new ArrayList<MessageListener>();
+    ArrayList<PresenceListener> listenersPresence = new ArrayList<PresenceListener>();
+    ArrayList<IqListener> listenersIq = new ArrayList<IqListener>();
+    HashMap<String, IqListener> listenersIqId = new HashMap<String, IqListener>();
     boolean loggedIn;
     Socket connection;
 
@@ -56,6 +56,7 @@ public abstract class XmppConnection extends Thread {
             restartParser();
             writer = new OutputStreamWriter(connection.getOutputStream());
         } catch (Exception e) {
+            connectionFailed(e.toString());
             return false;
         }
         return true;
@@ -91,32 +92,31 @@ public abstract class XmppConnection extends Thread {
             login();
             parse();
         } catch (final Exception e) {
-            System.err.println(e);
             connectionFailed(e.toString());
         }
     }
 
     public void addListener(final XmppListener l) {
         if (!listenersXmpp.contains(l)) {
-            listenersXmpp.addElement(l);
+            listenersXmpp.add(l);
         }
     }
 
     public void addListener(final MessageListener l) {
         if (!listenersMessage.contains(l)) {
-            listenersMessage.addElement(l);
+            listenersMessage.add(l);
         }
     }
 
     public void addListener(final PresenceListener l) {
         if (!listenersPresence.contains(l)) {
-            listenersPresence.addElement(l);
+            listenersPresence.add(l);
         }
     }
 
     public void addListener(final IqListener l) {
         if (!listenersIq.contains(l)) {
-            listenersIq.addElement(l);
+            listenersIq.add(l);
         }
     }
 
@@ -125,19 +125,19 @@ public abstract class XmppConnection extends Thread {
     }
 
     public boolean removeListener(final XmppListener l) {
-        return listenersXmpp.removeElement(l);
+        return listenersXmpp.remove(l);
     }
 
     public boolean removeListener(final MessageListener l) {
-        return listenersMessage.removeElement(l);
+        return listenersMessage.remove(l);
     }
 
     public boolean removeListener(final PresenceListener l) {
-        return listenersPresence.removeElement(l);
+        return listenersPresence.remove(l);
     }
 
     public boolean removeListener(final IqListener l) {
-        return listenersIq.removeElement(l);
+        return listenersIq.remove(l);
     }
 
     public abstract void login() throws XmlPullParserException, IOException;
@@ -166,14 +166,14 @@ public abstract class XmppConnection extends Thread {
             final String tag = parser.getName();
             if (tag.equals("message")) {
                 Message msg = Message.parse(parser);
-                for (Enumeration e = listenersMessage.elements(); e.hasMoreElements();) {
-                    MessageListener l = (MessageListener) e.nextElement();
+                for (Iterator it = listenersMessage.iterator(); it.hasNext();) {
+                    MessageListener l = (MessageListener) it.next();
                     l.onMessage(msg);
                 }
             } else if (tag.equals("presence")) {
                 Presence p = Presence.parse(parser);
-                for (Enumeration e = listenersPresence.elements(); e.hasMoreElements();) {
-                    PresenceListener l = (PresenceListener) e.nextElement();
+                for (Iterator it = listenersPresence.iterator(); it.hasNext();) {
+                    PresenceListener l = (PresenceListener) it.next();
                     l.onPresence(p);
                 }
             } else if (tag.equals("iq")) {
@@ -188,8 +188,8 @@ public abstract class XmppConnection extends Thread {
                     parsed |= l.onIq(iq);
                     listenersIqId.remove(key);
                 } else {
-                    for (Enumeration e = listenersIq.elements(); e.hasMoreElements();) {
-                        IqListener l = (IqListener) e.nextElement();
+                    for (Iterator it = listenersIq.iterator(); it.hasNext();) {
+                        IqListener l = (IqListener) it.next();
                         parsed |= l.onIq(iq);
                     }
                 }
@@ -216,8 +216,8 @@ public abstract class XmppConnection extends Thread {
             }
         }
 
-        for (Enumeration e = listenersXmpp.elements(); e.hasMoreElements();) {
-            XmppListener xl = (XmppListener) e.nextElement();
+        for (Iterator it = listenersXmpp.iterator(); it.hasNext();) {
+            XmppListener xl = (XmppListener) it.next();
             xl.onConnectionFailed(msg);
         }
     }

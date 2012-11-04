@@ -54,6 +54,10 @@ public class JuickMessage extends com.juick.Message implements ChildElement {
         if (sRID != null) {
             jmsg.RID = Integer.parseInt(sRID);
         }
+        final String sReplyTo = parser.getAttributeValue(null, "replyto");
+        if (sReplyTo != null) {
+            jmsg.ReplyTo = Integer.parseInt(sReplyTo);
+        }
         final String sPrivacy = parser.getAttributeValue(null, "privacy");
         if (sPrivacy != null) {
             jmsg.Privacy = Integer.parseInt(sPrivacy);
@@ -68,7 +72,7 @@ public class JuickMessage extends com.juick.Message implements ChildElement {
             } else if (tag.equals(JuickUser.TagName) && xmlns != null && xmlns.equals(JuickUser.XMLNS)) {
                 jmsg.User = JuickUser.parse(parser);
             } else if (tag.equals("tag")) {
-                jmsg.tags.addElement(XmlUtils.getTagText(parser));
+                jmsg.Tags.add(XmlUtils.getTagText(parser));
             } else {
                 XmlUtils.skip(parser);
             }
@@ -98,14 +102,14 @@ public class JuickMessage extends com.juick.Message implements ChildElement {
         if (Text != null) {
             ret += "<body>" + XmlUtils.escape(Text) + "</body>";
         }
-        if (!tags.isEmpty()) {
-            for (int i = 0; i < tags.size(); i++) {
-                ret += "<tag>" + XmlUtils.escape(tags.elementAt(i).toString()) + "</tag>";
+        if (!Tags.isEmpty()) {
+            for (int i = 0; i < Tags.size(); i++) {
+                ret += "<tag>" + XmlUtils.escape(Tags.get(i)) + "</tag>";
             }
         }
         ret += "</" + TagName + ">";
 
-        return super.toString();
+        return ret;
     }
 
     @Override

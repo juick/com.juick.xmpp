@@ -19,6 +19,7 @@ package com.juick.xmpp;
 
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParserException;
 
 /**
@@ -35,15 +36,15 @@ public class XmppConnectionComponent extends XmppConnection {
     public void login() throws XmlPullParserException, IOException {
         String msg = "<stream:stream xmlns='jabber:component:accept' xmlns:stream='http://etherx.jabber.org/streams' to='" + jid.toString() + "'>";
         writer.write(msg);
+        writer.flush();
 
         parser.next(); // stream:stream
-
         String id = parser.getAttributeValue(null, "id");
         String from = parser.getAttributeValue(null, "from");
         if (from == null || !from.equals(jid.toString())) {
             loggedIn = false;
-            for (Enumeration e = listenersXmpp.elements(); e.hasMoreElements();) {
-                XmppListener xl = (XmppListener) e.nextElement();
+            for (Iterator it = listenersXmpp.iterator(); it.hasNext();) {
+                XmppListener xl = (XmppListener) it.next();
                 xl.onAuthFailed("stream:stream, failed authentication");
             }
             return;
@@ -51,6 +52,7 @@ public class XmppConnectionComponent extends XmppConnection {
 
         msg = "<handshake>" + SHA1.encode(id + password) + "</handshake>";
         writer.write(msg);
+        writer.flush();
 
         parser.next();
         if (parser.getName().equals("handshake")) {
@@ -58,8 +60,8 @@ public class XmppConnectionComponent extends XmppConnection {
             loggedIn = true;
         } else {
             loggedIn = false;
-            for (Enumeration e = listenersXmpp.elements(); e.hasMoreElements();) {
-                XmppListener xl = (XmppListener) e.nextElement();
+            for (Iterator it = listenersXmpp.iterator(); it.hasNext();) {
+                XmppListener xl = (XmppListener) it.next();
                 xl.onAuthFailed(parser.getName() + ", failed authentication");
             }
             return;

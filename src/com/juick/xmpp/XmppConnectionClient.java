@@ -20,6 +20,7 @@ package com.juick.xmpp;
 import com.juick.xmpp.extensions.ResourceBinding;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -45,8 +46,8 @@ public class XmppConnectionClient extends XmppConnection implements IqListener {
         XmppStreamFeatures features = XmppStreamFeatures.parse(parser);
         if (features.STARTTLS == XmppStreamFeatures.REQUIRED || features.PLAIN == XmppStreamFeatures.NOTAVAILABLE) {
             loggedIn = false;
-            for (Enumeration e = listenersXmpp.elements(); e.hasMoreElements();) {
-                XmppListener xl = (XmppListener) e.nextElement();
+            for (Iterator it = listenersXmpp.iterator(); it.hasNext();) {
+                XmppListener xl = (XmppListener) it.next();
                 xl.onAuthFailed("stream:features, failed authentication");
             }
             return;
@@ -65,8 +66,8 @@ public class XmppConnectionClient extends XmppConnection implements IqListener {
             loggedIn = true;
         } else {
             loggedIn = false;
-            for (Enumeration e = listenersXmpp.elements(); e.hasMoreElements();) {
-                XmppListener xl = (XmppListener) e.nextElement();
+            for (Iterator it = listenersXmpp.iterator(); it.hasNext();) {
+                XmppListener xl = (XmppListener) it.next();
                 xl.onAuthFailed(parser.getName() + ", failed authentication");
             }
             return;
@@ -115,8 +116,8 @@ public class XmppConnectionClient extends XmppConnection implements IqListener {
             if (rb.jid != null) {
                 jid.Resource = rb.jid.Resource;
             }
-            for (Enumeration e = listenersXmpp.elements(); e.hasMoreElements();) {
-                XmppListener xl = (XmppListener) e.nextElement();
+            for (Iterator it = listenersXmpp.iterator(); it.hasNext();) {
+                XmppListener xl = (XmppListener) it.next();
                 xl.onAuth(jid.Resource);
             }
             session();
