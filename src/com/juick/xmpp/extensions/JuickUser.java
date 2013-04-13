@@ -47,16 +47,20 @@ public class JuickUser extends com.juick.User implements ChildElement {
         return juser;
     }
 
-    @Override
-    public String toString() {
+    public static String toString(com.juick.User user) {
         String str = "<" + TagName + " xmlns='" + XMLNS + "'";
-        if (UID > 0) {
-            str += " uid='" + UID + "'";
+        if (user.UID > 0) {
+            str += " uid='" + user.UID + "'";
         }
-        if (UName != null && UName.length() > 0) {
-            str += " uname='" + XmlUtils.escape(UName) + "'";
+        if (user.UName != null && user.UName.length() > 0) {
+            str += " uname='" + XmlUtils.escape(user.UName) + "'";
         }
         str += "/>";
         return str;
+    }
+
+    @Override
+    public String toString() {
+        return toString(this);
     }
 }

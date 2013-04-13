@@ -156,6 +156,7 @@ public abstract class XmppConnection extends Thread {
     public void send(final Stanza s) {
         try {
             writer.write(s.toString());
+            writer.flush();
         } catch (final Exception e) {
             connectionFailed(e.toString());
         }

@@ -97,7 +97,7 @@ public class JuickMessage extends com.juick.Message implements ChildElement {
         }
         ret += ">";
         if (User != null) {
-            ret += User.toString();
+            ret += JuickUser.toString(User);
         }
         if (Text != null) {
             ret += "<body>" + XmlUtils.escape(Text) + "</body>";
