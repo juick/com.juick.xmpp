@@ -20,6 +20,7 @@ package com.juick.xmpp;
 import com.juick.xmpp.utils.XmlUtils;
 import com.juick.xmpp.utils.Base64;
 import com.juick.xmpp.extensions.ResourceBinding;
+import com.juick.xmpp.extensions.StreamFeatures;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -48,8 +49,8 @@ public class StreamClient extends Stream implements Iq.IqListener {
         writer.flush();
         parser.next(); // stream:stream
 
-        XmppStreamFeatures features = XmppStreamFeatures.parse(parser);
-        if (features.STARTTLS == XmppStreamFeatures.REQUIRED || features.PLAIN == XmppStreamFeatures.NOTAVAILABLE) {
+        StreamFeatures features = StreamFeatures.parse(parser);
+        if (features.STARTTLS == StreamFeatures.REQUIRED || features.PLAIN == StreamFeatures.NOTAVAILABLE) {
             loggedIn = false;
             for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
                 it.next().onAuthFailed("stream:features, failed authentication");
@@ -132,70 +133,5 @@ public class StreamClient extends Stream implements Iq.IqListener {
             return true;
         }
         return false;
-    }
-}
-
-class XmppStreamFeatures {
-
-    public static final int NOTAVAILABLE = -1;
-    public static final int AVAILABLE = 0;
-    public static final int REQUIRED = 1;
-    public int STARTTLS = NOTAVAILABLE;
-    public int ZLIB = NOTAVAILABLE;
-    public int PLAIN = NOTAVAILABLE;
-    public int DIGEST_MD5 = NOTAVAILABLE;
-    public int X_GOOGLE_TOKEN = NOTAVAILABLE;
-    public int REGISTER = NOTAVAILABLE;
-
-    public static XmppStreamFeatures parse(final XmlPullParser parser) throws XmlPullParserException, IOException {
-        XmppStreamFeatures features = new XmppStreamFeatures();
-
-        parser.next(); // Go in stream:features
-        while (parser.next() == XmlPullParser.START_TAG) {
-            final String tag = parser.getName();
-            final String xmlns = parser.getNamespace();
-            if (tag.equals("starttls") && xmlns != null && xmlns.equals("urn:ietf:params:xml:ns:xmpp-tls")) {
-                features.STARTTLS = AVAILABLE;
-                while (parser.next() == XmlPullParser.START_TAG) {
-                    if (parser.getName().equals("required")) {
-                        features.STARTTLS = REQUIRED;
-                    } else {
-                        XmlUtils.skip(parser);
-                    }
-                }
-            } else if (tag.equals("compression") && xmlns != null && xmlns.equals("http://jabber.org/features/compress")) {
-                while (parser.next() == XmlPullParser.START_TAG) {
-                    if (parser.getName().equals("method")) {
-                        final String method = XmlUtils.getTagText(parser).toUpperCase();
-                        if (method.equals("ZLIB")) {
-                            features.ZLIB = AVAILABLE;
-                        }
-                    } else {
-                        XmlUtils.skip(parser);
-                    }
-                }
-            } else if (tag.equals("mechanisms") && xmlns != null && xmlns.equals("urn:ietf:params:xml:ns:xmpp-sasl")) {
-                while (parser.next() == XmlPullParser.START_TAG) {
-                    if (parser.getName().equals("mechanism")) {
-                        final String mechanism = XmlUtils.getTagText(parser).toUpperCase();
-                        if (mechanism.equals("PLAIN")) {
-                            features.PLAIN = AVAILABLE;
-                        } else if (mechanism.equals("DIGEST-MD5")) {
-                            features.DIGEST_MD5 = AVAILABLE;
-                        } else if (mechanism.equals("X-GOOGLE-TOKEN")) {
-                            features.X_GOOGLE_TOKEN = AVAILABLE;
-                        }
-                    } else {
-                        XmlUtils.skip(parser);
-                    }
-                }
-            } else if (tag.equals("register") && xmlns != null && xmlns.equals("http://jabber.org/features/iq-register")) {
-                features.REGISTER = AVAILABLE;
-                XmlUtils.skip(parser);
-            } else {
-                XmlUtils.skip(parser);
-            }
-        }
-        return features;
     }
 }
