@@ -29,6 +29,11 @@ import org.xmlpull.v1.XmlPullParserException;
  */
 public class Iq extends Stanza {
 
+    public interface IqListener {
+
+        public boolean onIq(final Iq iq);
+    }
+
     public static final class Type {
 
         public static final String get = "get";

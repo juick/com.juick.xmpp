@@ -29,7 +29,7 @@ import org.xmlpull.v1.XmlPullParserException;
  *
  * @author Ugnich Anton
  */
-public class XmppConnectionClient extends XmppConnection implements IqListener {
+public class XmppConnectionClient extends XmppConnection implements Iq.IqListener {
 
     public final static String XMLNS = "urn:ietf:params:xml:ns:xmpp-session";
 

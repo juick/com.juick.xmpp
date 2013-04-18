@@ -29,6 +29,11 @@ import org.xmlpull.v1.XmlPullParserException;
  */
 public class Presence extends Stanza {
 
+    public interface PresenceListener {
+
+        public void onPresence(final Presence presence);
+    }
+
     public static final class Type {
 
         public static final String unavailable = "unavailable";

@@ -36,6 +36,25 @@ import org.xmlpull.v1.XmlPullParserException;
  */
 public abstract class XmppConnection extends Thread {
 
+    public interface XmppListener {
+
+        /**
+         * This event is sent when a parser or connection error occurs.
+         */
+        public void onConnectionFailed(final String msg);
+
+        /**
+         * This event occurs when the login/authentication process succeeds.
+         */
+        public void onAuth(final String resource);
+
+        /**
+         * This event occurs when the login/authentication process fails.
+         *
+         * @param message some error information
+         */
+        public void onAuthFailed(final String message);
+    }
     public JID jid;
     String password;
     String server;
@@ -45,10 +64,10 @@ public abstract class XmppConnection extends Thread {
     protected OutputStreamWriter writer;
     HashMap<String, StanzaChild> childParsers = new HashMap<String, StanzaChild>();
     ArrayList<XmppListener> listenersXmpp = new ArrayList<XmppListener>();
-    ArrayList<MessageListener> listenersMessage = new ArrayList<MessageListener>();
-    ArrayList<PresenceListener> listenersPresence = new ArrayList<PresenceListener>();
-    ArrayList<IqListener> listenersIq = new ArrayList<IqListener>();
-    HashMap<String, IqListener> listenersIqId = new HashMap<String, IqListener>();
+    ArrayList<Message.MessageListener> listenersMessage = new ArrayList<Message.MessageListener>();
+    ArrayList<Presence.PresenceListener> listenersPresence = new ArrayList<Presence.PresenceListener>();
+    ArrayList<Iq.IqListener> listenersIq = new ArrayList<Iq.IqListener>();
+    HashMap<String, Iq.IqListener> listenersIqId = new HashMap<String, Iq.IqListener>();
     boolean loggedIn;
     Socket connection;
 
@@ -116,25 +135,25 @@ public abstract class XmppConnection extends Thread {
         }
     }
 
-    public void addListener(final MessageListener l) {
+    public void addListener(final Message.MessageListener l) {
         if (!listenersMessage.contains(l)) {
             listenersMessage.add(l);
         }
     }
 
-    public void addListener(final PresenceListener l) {
+    public void addListener(final Presence.PresenceListener l) {
         if (!listenersPresence.contains(l)) {
             listenersPresence.add(l);
         }
     }
 
-    public void addListener(final IqListener l) {
+    public void addListener(final Iq.IqListener l) {
         if (!listenersIq.contains(l)) {
             listenersIq.add(l);
         }
     }
 
-    public void addListener(final String jid, final String id, final IqListener iql) {
+    public void addListener(final String jid, final String id, final Iq.IqListener iql) {
         listenersIqId.put(jid + "\n" + id, iql);
     }
 
@@ -142,15 +161,15 @@ public abstract class XmppConnection extends Thread {
         return listenersXmpp.remove(l);
     }
 
-    public boolean removeListener(final MessageListener l) {
+    public boolean removeListener(final Message.MessageListener l) {
         return listenersMessage.remove(l);
     }
 
-    public boolean removeListener(final PresenceListener l) {
+    public boolean removeListener(final Presence.PresenceListener l) {
         return listenersPresence.remove(l);
     }
 
-    public boolean removeListener(final IqListener l) {
+    public boolean removeListener(final Iq.IqListener l) {
         return listenersIq.remove(l);
     }
 
@@ -181,12 +200,12 @@ public abstract class XmppConnection extends Thread {
             final String tag = parser.getName();
             if (tag.equals("message")) {
                 Message msg = Message.parse(parser, childParsers);
-                for (Iterator<MessageListener> it = listenersMessage.iterator(); it.hasNext();) {
+                for (Iterator<Message.MessageListener> it = listenersMessage.iterator(); it.hasNext();) {
                     it.next().onMessage(msg);
                 }
             } else if (tag.equals("presence")) {
                 Presence p = Presence.parse(parser, childParsers);
-                for (Iterator<PresenceListener> it = listenersPresence.iterator(); it.hasNext();) {
+                for (Iterator<Presence.PresenceListener> it = listenersPresence.iterator(); it.hasNext();) {
                     it.next().onPresence(p);
                 }
             } else if (tag.equals("iq")) {
@@ -197,11 +216,11 @@ public abstract class XmppConnection extends Thread {
                 final String key = iq.from.toString() + "\n" + iq.id;
                 boolean parsed = false;
                 if (listenersIqId.containsKey(key)) {
-                    IqListener l = (IqListener) listenersIqId.get(key);
+                    Iq.IqListener l = (Iq.IqListener) listenersIqId.get(key);
                     parsed |= l.onIq(iq);
                     listenersIqId.remove(key);
                 } else {
-                    for (Iterator<IqListener> it = listenersIq.iterator(); it.hasNext();) {
+                    for (Iterator<Iq.IqListener> it = listenersIq.iterator(); it.hasNext();) {
                         parsed |= it.next().onIq(iq);
                     }
                 }

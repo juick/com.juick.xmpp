@@ -29,6 +29,11 @@ import org.xmlpull.v1.XmlPullParserException;
  */
 public class Message extends Stanza {
 
+    public interface MessageListener {
+
+        public void onMessage(final Message message);
+    }
+
     public static final class Type {
 
         public static final String chat = "chat";
