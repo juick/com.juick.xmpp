@@ -17,6 +17,7 @@
  */
 package com.juick.xmpp;
 
+import com.juick.xmpp.utils.SHA1;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Iterator;
