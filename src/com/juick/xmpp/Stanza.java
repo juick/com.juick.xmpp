@@ -18,8 +18,8 @@
 package com.juick.xmpp;
 
 import com.juick.xmpp.utils.XmlUtils;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParser;
 
 /**
@@ -32,10 +32,10 @@ public class Stanza {
     public JID to = null;
     public String id = Long.toString(System.currentTimeMillis());
     public String type = null;
-    public Vector childs = new Vector();
+    public ArrayList<StanzaChild> childs = new ArrayList<StanzaChild>();
 
     public void addChild(StanzaChild child) {
-        childs.addElement(child);
+        childs.add(child);
     }
 
     public boolean hasChilds() {
@@ -43,8 +43,9 @@ public class Stanza {
     }
 
     public StanzaChild getChild(String XMLNS) {
-        for (Enumeration e = childs.elements(); e.hasMoreElements();) {
-            StanzaChild ce = (StanzaChild) e.nextElement();
+        Iterator<StanzaChild> i = childs.iterator();
+        while (i.hasNext()) {
+            StanzaChild ce = (StanzaChild) i.next();
             if (ce.getXMLNS().equals(XMLNS)) {
                 return ce;
             }

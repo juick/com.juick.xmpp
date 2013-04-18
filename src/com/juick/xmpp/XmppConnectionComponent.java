@@ -19,7 +19,6 @@ package com.juick.xmpp;
 
 import com.juick.xmpp.utils.SHA1;
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -44,9 +43,8 @@ public class XmppConnectionComponent extends XmppConnection {
         String from = parser.getAttributeValue(null, "from");
         if (from == null || !from.equals(jid.toString())) {
             loggedIn = false;
-            for (Iterator it = listenersXmpp.iterator(); it.hasNext();) {
-                XmppListener xl = (XmppListener) it.next();
-                xl.onAuthFailed("stream:stream, failed authentication");
+            for (Iterator<XmppListener> it = listenersXmpp.iterator(); it.hasNext();) {
+                it.next().onAuthFailed("stream:stream, failed authentication");
             }
             return;
         }
@@ -61,9 +59,8 @@ public class XmppConnectionComponent extends XmppConnection {
             loggedIn = true;
         } else {
             loggedIn = false;
-            for (Iterator it = listenersXmpp.iterator(); it.hasNext();) {
-                XmppListener xl = (XmppListener) it.next();
-                xl.onAuthFailed(parser.getName() + ", failed authentication");
+            for (Iterator<XmppListener> it = listenersXmpp.iterator(); it.hasNext();) {
+                it.next().onAuthFailed(parser.getName() + ", failed authentication");
             }
             return;
         }

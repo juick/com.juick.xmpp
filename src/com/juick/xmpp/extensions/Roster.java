@@ -20,8 +20,8 @@ package com.juick.xmpp.extensions;
 import com.juick.xmpp.utils.XmlUtils;
 import com.juick.xmpp.*;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -33,7 +33,7 @@ public class Roster implements StanzaChild {
 
     public final static String XMLNS = "jabber:iq:roster";
     public final static String TagName = "query";
-    public Vector items = new Vector();
+    public ArrayList<Item> items = new ArrayList<Item>();
 
     @Override
     public String getXMLNS() {
@@ -61,7 +61,7 @@ public class Roster implements StanzaChild {
                         XmlUtils.skip(parser);
                     }
                 }
-                roster.items.addElement(ri);
+                roster.items.add(ri);
             } else {
                 XmlUtils.skip(parser);
             }
@@ -72,8 +72,8 @@ public class Roster implements StanzaChild {
     @Override
     public String toString() {
         String str = "<" + TagName + " xmlns='" + XMLNS + "'>";
-        for (Enumeration e = items.elements(); e.hasMoreElements();) {
-            str += ((Item) e.nextElement()).toString();
+        for (Iterator<Item> i = items.iterator(); i.hasNext();) {
+            str += i.next().toString();
         }
         str += "</" + TagName + ">";
         return str;

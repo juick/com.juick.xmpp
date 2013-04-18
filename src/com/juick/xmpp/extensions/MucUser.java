@@ -20,8 +20,8 @@ package com.juick.xmpp.extensions;
 import com.juick.xmpp.utils.XmlUtils;
 import com.juick.xmpp.*;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -34,7 +34,7 @@ public class MucUser implements StanzaChild {
     public final static String XMLNS = "http://jabber.org/protocol/muc#user";
     public final static String TagName = "x";
     public Item item = null;
-    public Vector status = new Vector();
+    public ArrayList<Integer> status = new ArrayList<Integer>();
     public Invite invite = null;
 
     @Override
@@ -55,7 +55,7 @@ public class MucUser implements StanzaChild {
     }
 
     public void addStatus(final int code) {
-        status.addElement(new Integer(code));
+        status.add(new Integer(code));
     }
 
     @Override
@@ -73,7 +73,7 @@ public class MucUser implements StanzaChild {
                 try {
                     int code = Integer.parseInt(codestr);
                     if (code >= 100 && code <= 999) {
-                        di.status.addElement(new Integer(code));
+                        di.status.add(new Integer(code));
                     }
                 } catch (NumberFormatException e) {
                 }
@@ -93,8 +93,8 @@ public class MucUser implements StanzaChild {
         if (invite != null) {
             str += invite.toString();
         }
-        for (Enumeration e = status.elements(); e.hasMoreElements();) {
-            str += "<status code='" + ((Integer) e.nextElement()) + "'/>";
+        for (Iterator<Integer> i = status.iterator(); i.hasNext();) {
+            str += "<status code='" + i.next() + "'/>";
         }
         str += "</" + TagName + ">";
         return str;

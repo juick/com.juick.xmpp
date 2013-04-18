@@ -18,8 +18,8 @@
 package com.juick.xmpp;
 
 import com.juick.xmpp.utils.XmlUtils;
-import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -99,8 +99,9 @@ public class Message extends Stanza {
             str += "<thread>" + XmlUtils.escape(thread) + "</thread>";
         }
 
-        for (Enumeration e = childs.elements(); e.hasMoreElements();) {
-            str += e.nextElement().toString();
+        Iterator<StanzaChild> i = childs.iterator();
+        while (i.hasNext()) {
+            str += i.next().toString();
         }
 
         str += "</" + TagName + ">";

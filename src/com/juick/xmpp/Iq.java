@@ -18,8 +18,8 @@
 package com.juick.xmpp;
 
 import com.juick.xmpp.utils.XmlUtils;
-import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -40,13 +40,13 @@ public class Iq extends Stanza {
 
     @Override
     public void addChild(StanzaChild child) {
-        childs.removeAllElements();
-        childs.addElement(child);
+        childs.clear();
+        childs.add(child);
     }
 
     public StanzaChild getChild() {
         if (!childs.isEmpty()) {
-            return (StanzaChild) childs.firstElement();
+            return (StanzaChild) childs.get(0);
         } else {
             return null;
         }
@@ -99,8 +99,9 @@ public class Iq extends Stanza {
     @Override
     public String toString() {
         String str = "<" + TagName + super.toString() + ">";
-        for (Enumeration e = childs.elements(); e.hasMoreElements();) {
-            str += e.nextElement().toString();
+        Iterator<StanzaChild> i = childs.iterator();
+        while (i.hasNext()) {
+            str += i.next().toString();
         }
         if (type.equals(Type.error)) {
             str += "<error type='cancel'><service-unavailable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas' /></error>";

@@ -20,8 +20,8 @@ package com.juick.xmpp.extensions;
 import com.juick.xmpp.utils.XmlUtils;
 import com.juick.xmpp.*;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -33,7 +33,7 @@ public class DiscoItems implements StanzaChild {
 
     public final static String XMLNS = "http://jabber.org/protocol/disco#items";
     public final static String TagName = "query";
-    public Vector items = new Vector();
+    public ArrayList<Item> items = new ArrayList<Item>();
 
     @Override
     public String getXMLNS() {
@@ -44,7 +44,7 @@ public class DiscoItems implements StanzaChild {
         Item i = new Item();
         i.jid = jid;
         i.name = name;
-        items.addElement(i);
+        items.add(i);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class DiscoItems implements StanzaChild {
                     i.jid = new JID(strJID);
                 }
                 i.name = parser.getAttributeValue(null, "name");
-                di.items.addElement(i);
+                di.items.add(i);
             } else {
                 XmlUtils.skip(parser);
             }
@@ -71,8 +71,8 @@ public class DiscoItems implements StanzaChild {
     @Override
     public String toString() {
         String str = "<" + TagName + " xmlns='" + XMLNS + "'>";
-        for (Enumeration e = items.elements(); e.hasMoreElements();) {
-            str += ((Item) e.nextElement()).toString();
+        for (Iterator<Item> i = items.iterator(); i.hasNext();) {
+            str += i.next().toString();
         }
         str += "</" + TagName + ">";
         return str;

@@ -20,8 +20,8 @@ package com.juick.xmpp.extensions;
 import com.juick.xmpp.utils.XmlUtils;
 import com.juick.xmpp.*;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -33,8 +33,8 @@ public class DiscoInfo implements StanzaChild {
 
     public final static String XMLNS = "http://jabber.org/protocol/disco#info";
     public final static String TagName = "query";
-    public Vector identities = new Vector();
-    public Vector features = new Vector();
+    public ArrayList<Identity> identities = new ArrayList<Identity>();
+    public ArrayList<String> features = new ArrayList<String>();
 
     @Override
     public String getXMLNS() {
@@ -46,11 +46,11 @@ public class DiscoInfo implements StanzaChild {
         i.category = category;
         i.type = type;
         i.name = name;
-        identities.addElement(i);
+        identities.add(i);
     }
 
     public void addFeature(final String feature) {
-        features.addElement(feature);
+        features.add(feature);
     }
 
     @Override
@@ -64,9 +64,9 @@ public class DiscoInfo implements StanzaChild {
                 i.category = parser.getAttributeValue(null, "category");
                 i.type = parser.getAttributeValue(null, "type");
                 i.name = parser.getAttributeValue(null, "name");
-                di.identities.addElement(i);
+                di.identities.add(i);
             } else if (tag.equals("feature")) {
-                di.features.addElement(parser.getAttributeValue(null, "var"));
+                di.features.add(parser.getAttributeValue(null, "var"));
             } else {
                 XmlUtils.skip(parser);
             }
@@ -77,11 +77,11 @@ public class DiscoInfo implements StanzaChild {
     @Override
     public String toString() {
         String str = "<" + TagName + " xmlns='" + XMLNS + "'>";
-        for (Enumeration e = identities.elements(); e.hasMoreElements();) {
-            str += ((Identity) e.nextElement()).toString();
+        for (Iterator<Identity> i = identities.iterator(); i.hasNext();) {
+            str += i.next().toString();
         }
-        for (Enumeration e = features.elements(); e.hasMoreElements();) {
-            str += "<feature var='" + e.nextElement() + "'/>";
+        for (Iterator<String> i = features.iterator(); i.hasNext();) {
+            str += "<feature var='" + i.next() + "'/>";
         }
         str += "</" + TagName + ">";
         return str;

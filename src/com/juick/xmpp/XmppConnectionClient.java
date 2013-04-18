@@ -47,9 +47,8 @@ public class XmppConnectionClient extends XmppConnection implements IqListener {
         XmppStreamFeatures features = XmppStreamFeatures.parse(parser);
         if (features.STARTTLS == XmppStreamFeatures.REQUIRED || features.PLAIN == XmppStreamFeatures.NOTAVAILABLE) {
             loggedIn = false;
-            for (Iterator it = listenersXmpp.iterator(); it.hasNext();) {
-                XmppListener xl = (XmppListener) it.next();
-                xl.onAuthFailed("stream:features, failed authentication");
+            for (Iterator<XmppListener> it = listenersXmpp.iterator(); it.hasNext();) {
+                it.next().onAuthFailed("stream:features, failed authentication");
             }
             return;
         }
@@ -67,9 +66,8 @@ public class XmppConnectionClient extends XmppConnection implements IqListener {
             loggedIn = true;
         } else {
             loggedIn = false;
-            for (Iterator it = listenersXmpp.iterator(); it.hasNext();) {
-                XmppListener xl = (XmppListener) it.next();
-                xl.onAuthFailed(parser.getName() + ", failed authentication");
+            for (Iterator<XmppListener> it = listenersXmpp.iterator(); it.hasNext();) {
+                it.next().onAuthFailed(parser.getName() + ", failed authentication");
             }
             return;
         }
@@ -118,9 +116,8 @@ public class XmppConnectionClient extends XmppConnection implements IqListener {
             if (rb.jid != null) {
                 jid.Resource = rb.jid.Resource;
             }
-            for (Iterator it = listenersXmpp.iterator(); it.hasNext();) {
-                XmppListener xl = (XmppListener) it.next();
-                xl.onAuth(jid.Resource);
+            for (Iterator<XmppListener> it = listenersXmpp.iterator(); it.hasNext();) {
+                it.next().onAuth(jid.Resource);
             }
             session();
 

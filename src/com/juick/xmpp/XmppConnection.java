@@ -181,15 +181,13 @@ public abstract class XmppConnection extends Thread {
             final String tag = parser.getName();
             if (tag.equals("message")) {
                 Message msg = Message.parse(parser, childParsers);
-                for (Iterator it = listenersMessage.iterator(); it.hasNext();) {
-                    MessageListener l = (MessageListener) it.next();
-                    l.onMessage(msg);
+                for (Iterator<MessageListener> it = listenersMessage.iterator(); it.hasNext();) {
+                    it.next().onMessage(msg);
                 }
             } else if (tag.equals("presence")) {
                 Presence p = Presence.parse(parser, childParsers);
-                for (Iterator it = listenersPresence.iterator(); it.hasNext();) {
-                    PresenceListener l = (PresenceListener) it.next();
-                    l.onPresence(p);
+                for (Iterator<PresenceListener> it = listenersPresence.iterator(); it.hasNext();) {
+                    it.next().onPresence(p);
                 }
             } else if (tag.equals("iq")) {
                 Iq iq = Iq.parse(parser, childParsers);
@@ -203,9 +201,8 @@ public abstract class XmppConnection extends Thread {
                     parsed |= l.onIq(iq);
                     listenersIqId.remove(key);
                 } else {
-                    for (Iterator it = listenersIq.iterator(); it.hasNext();) {
-                        IqListener l = (IqListener) it.next();
-                        parsed |= l.onIq(iq);
+                    for (Iterator<IqListener> it = listenersIq.iterator(); it.hasNext();) {
+                        parsed |= it.next().onIq(iq);
                     }
                 }
                 if (!parsed) {
@@ -231,9 +228,8 @@ public abstract class XmppConnection extends Thread {
             }
         }
 
-        for (Iterator it = listenersXmpp.iterator(); it.hasNext();) {
-            XmppListener xl = (XmppListener) it.next();
-            xl.onConnectionFailed(msg);
+        for (Iterator<XmppListener> it = listenersXmpp.iterator(); it.hasNext();) {
+            it.next().onConnectionFailed(msg);
         }
     }
 }
