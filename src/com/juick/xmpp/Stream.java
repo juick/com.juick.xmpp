@@ -34,9 +34,9 @@ import org.xmlpull.v1.XmlPullParserException;
  *
  * @author Ugnich Anton
  */
-public abstract class XmppConnection extends Thread {
+public abstract class Stream extends Thread {
 
-    public interface XmppListener {
+    public interface StreamListener {
 
         /**
          * This event is sent when a parser or connection error occurs.
@@ -63,7 +63,7 @@ public abstract class XmppConnection extends Thread {
     protected XmlPullParser parser;
     protected OutputStreamWriter writer;
     HashMap<String, StanzaChild> childParsers = new HashMap<String, StanzaChild>();
-    ArrayList<XmppListener> listenersXmpp = new ArrayList<XmppListener>();
+    ArrayList<StreamListener> listenersXmpp = new ArrayList<StreamListener>();
     ArrayList<Message.MessageListener> listenersMessage = new ArrayList<Message.MessageListener>();
     ArrayList<Presence.PresenceListener> listenersPresence = new ArrayList<Presence.PresenceListener>();
     ArrayList<Iq.IqListener> listenersIq = new ArrayList<Iq.IqListener>();
@@ -93,7 +93,7 @@ public abstract class XmppConnection extends Thread {
         parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
     }
 
-    public XmppConnection(final JID jid, final String password, final String server, final int port, final boolean use_ssl) {
+    public Stream(final JID jid, final String password, final String server, final int port, final boolean use_ssl) {
         this.jid = jid;
         this.password = password;
         if (server == null || server.length() == 0) {
@@ -129,7 +129,7 @@ public abstract class XmppConnection extends Thread {
         childParsers.remove(xmlns);
     }
 
-    public void addListener(final XmppListener l) {
+    public void addListener(final StreamListener l) {
         if (!listenersXmpp.contains(l)) {
             listenersXmpp.add(l);
         }
@@ -157,7 +157,7 @@ public abstract class XmppConnection extends Thread {
         listenersIqId.put(jid + "\n" + id, iql);
     }
 
-    public boolean removeListener(final XmppListener l) {
+    public boolean removeListener(final StreamListener l) {
         return listenersXmpp.remove(l);
     }
 
@@ -247,7 +247,7 @@ public abstract class XmppConnection extends Thread {
             }
         }
 
-        for (Iterator<XmppListener> it = listenersXmpp.iterator(); it.hasNext();) {
+        for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
             it.next().onConnectionFailed(msg);
         }
     }

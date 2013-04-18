@@ -1,6 +1,6 @@
 /*
  * Juick
- * Copyright (C) 2008-2011, Ugnich Anton
+ * Copyright (C) 2008-2013, Ugnich Anton
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,7 +17,6 @@
  */
 package com.juick.xmpp;
 
-import com.juick.xmpp.utils.SHA1;
 import java.io.IOException;
 import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParserException;
@@ -26,41 +25,31 @@ import org.xmlpull.v1.XmlPullParserException;
  *
  * @author Ugnich Anton
  */
-public class XmppConnectionComponent extends XmppConnection {
+public class StreamServer extends Stream {
 
-    public XmppConnectionComponent(final JID jid, final String password, final String server, final int port, final boolean use_ssl) {
+    public StreamServer(final JID jid, final String password, final String server, final int port, final boolean use_ssl) {
         super(jid, password, server, port, use_ssl);
     }
 
     @Override
     public void login() throws XmlPullParserException, IOException {
-        String msg = "<stream:stream xmlns='jabber:component:accept' xmlns:stream='http://etherx.jabber.org/streams' to='" + jid.toString() + "'>";
+        String msg = "<?xml version='1.0'?><stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:server' xmlns:db='jabber:server:dialback' to='" + jid.toString() + "' version='1.0'>";
         writer.write(msg);
         writer.flush();
-
+        /*
+        <?xml version='1.0'?><stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:server' xmlns:db='jabber:server:dialback' id='2466825736' version='1.0'>
+        <stream:features>
+        <starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>
+        <c xmlns='http://jabber.org/protocol/caps' hash='sha-1' node='http://www.process-one.net/en/ejabberd/' ver='rvAR01fKsc40hT0hOLGDuG25y9o='/>
+        </stream:features>
+         */
         parser.next(); // stream:stream
         String id = parser.getAttributeValue(null, "id");
         String from = parser.getAttributeValue(null, "from");
         if (from == null || !from.equals(jid.toString())) {
             loggedIn = false;
-            for (Iterator<XmppListener> it = listenersXmpp.iterator(); it.hasNext();) {
+            for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
                 it.next().onAuthFailed("stream:stream, failed authentication");
-            }
-            return;
-        }
-
-        msg = "<handshake>" + SHA1.encode(id + password) + "</handshake>";
-        writer.write(msg);
-        writer.flush();
-
-        parser.next();
-        if (parser.getName().equals("handshake")) {
-            parser.next();
-            loggedIn = true;
-        } else {
-            loggedIn = false;
-            for (Iterator<XmppListener> it = listenersXmpp.iterator(); it.hasNext();) {
-                it.next().onAuthFailed(parser.getName() + ", failed authentication");
             }
             return;
         }

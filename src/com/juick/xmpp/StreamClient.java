@@ -25,15 +25,16 @@ import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+
 /**
  *
  * @author Ugnich Anton
  */
-public class XmppConnectionClient extends XmppConnection implements Iq.IqListener {
+public class StreamClient extends Stream implements Iq.IqListener {
 
     public final static String XMLNS = "urn:ietf:params:xml:ns:xmpp-session";
 
-    public XmppConnectionClient(final JID jid, final String password, final String server, final int port, final boolean use_ssl) {
+    public StreamClient(final JID jid, final String password, final String server, final int port, final boolean use_ssl) {
         super(jid, password, server, port, use_ssl);
     }
 
@@ -47,7 +48,7 @@ public class XmppConnectionClient extends XmppConnection implements Iq.IqListene
         XmppStreamFeatures features = XmppStreamFeatures.parse(parser);
         if (features.STARTTLS == XmppStreamFeatures.REQUIRED || features.PLAIN == XmppStreamFeatures.NOTAVAILABLE) {
             loggedIn = false;
-            for (Iterator<XmppListener> it = listenersXmpp.iterator(); it.hasNext();) {
+            for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
                 it.next().onAuthFailed("stream:features, failed authentication");
             }
             return;
@@ -66,7 +67,7 @@ public class XmppConnectionClient extends XmppConnection implements Iq.IqListene
             loggedIn = true;
         } else {
             loggedIn = false;
-            for (Iterator<XmppListener> it = listenersXmpp.iterator(); it.hasNext();) {
+            for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
                 it.next().onAuthFailed(parser.getName() + ", failed authentication");
             }
             return;
@@ -116,7 +117,7 @@ public class XmppConnectionClient extends XmppConnection implements Iq.IqListene
             if (rb.jid != null) {
                 jid.Resource = rb.jid.Resource;
             }
-            for (Iterator<XmppListener> it = listenersXmpp.iterator(); it.hasNext();) {
+            for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
                 it.next().onAuth(jid.Resource);
             }
             session();
@@ -130,7 +131,6 @@ public class XmppConnectionClient extends XmppConnection implements Iq.IqListene
         return false;
     }
 }
-
 class XmppStreamFeatures {
 
     public static final int NOTAVAILABLE = -1;
