@@ -26,7 +26,7 @@ import org.xmlpull.v1.XmlPullParserException;
  * http://xmpp.org/extensions/inbox/instant-gaming.html
  * @author Ugnich Anton
  */
-public class Games implements ChildElement {
+public class Games implements StanzaChild {
 
     public final static String XMLNS = "http://jabber.org/protocol/games";
     public final static String TagName = "";
@@ -46,7 +46,8 @@ public class Games implements ChildElement {
         return XMLNS;
     }
 
-    public static Games parse(XmlPullParser parser) throws XmlPullParserException, IOException {
+    @Override
+    public Games parse(XmlPullParser parser) throws XmlPullParserException, IOException {
         Games games = new Games();
 
         String tag = parser.getName();
@@ -55,7 +56,7 @@ public class Games implements ChildElement {
             while (parser.next() == XmlPullParser.START_TAG) {
                 final String xmlns = parser.getAttributeValue(null, "xmlns");
                 if (xmlns != null && xmlns.equals(GameTicTacToe.XMLNS)) {
-                    games.turn = GameTicTacToe.parse(parser);
+                    games.turn = new GameTicTacToe().parse(parser);
                 } else {
                     XmlUtils.skip(parser);
                 }

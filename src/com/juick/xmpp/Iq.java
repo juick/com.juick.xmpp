@@ -18,7 +18,9 @@
 package com.juick.xmpp;
 
 import java.util.Enumeration;
-import org.xmlpull.v1.*;
+import java.util.HashMap;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 /**
  *
@@ -36,14 +38,14 @@ public class Iq extends Stanza {
     public final static String TagName = "iq";
 
     @Override
-    public void addChild(ChildElement child) {
+    public void addChild(StanzaChild child) {
         childs.removeAllElements();
         childs.addElement(child);
     }
 
-    public ChildElement getChild() {
+    public StanzaChild getChild() {
         if (!childs.isEmpty()) {
-            return (ChildElement) childs.firstElement();
+            return (StanzaChild) childs.firstElement();
         } else {
             return null;
         }
@@ -57,27 +59,32 @@ public class Iq extends Stanza {
         reply.type = Type.result;
         return reply;
     }
-    
+
     public Iq error() {
         // TODO: implement other types
         Iq error = new Iq();
         error.from = to;
         error.to = from;
         error.id = this.id;
-        error.type = Type.error;        
+        error.type = Type.error;
         return error;
     }
 
-    public static Iq parse(XmlPullParser parser) throws XmlPullParserException, java.io.IOException {
+    public static Iq parse(XmlPullParser parser, HashMap<String, StanzaChild> childParsers) throws XmlPullParserException, java.io.IOException {
         Iq iq = new Iq();
         iq.parseStanza(parser);
 
         while (parser.next() == XmlPullParser.START_TAG) {
             final String xmlns = parser.getNamespace();
             if (xmlns != null) {
-                ChildElement child = Stanza.parseChild(xmlns, parser);
-                if (child != null) {
-                    iq.addChild(child);
+                StanzaChild childparser = childParsers.get(xmlns);
+                if (childparser != null) {
+                    StanzaChild child = childparser.parse(parser);
+                    if (child != null) {
+                        iq.addChild(child);
+                    } else {
+                        XmlUtils.skip(parser);
+                    }
                 } else {
                     XmlUtils.skip(parser);
                 }

@@ -18,6 +18,7 @@
 package com.juick.xmpp;
 
 import java.util.Enumeration;
+import java.util.HashMap;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -50,7 +51,7 @@ public class Presence extends Stanza {
     public String show = null; // away / chat / dnd / xa
     public String status = null;
 
-    public static Presence parse(XmlPullParser parser) throws XmlPullParserException, java.io.IOException {
+    public static Presence parse(XmlPullParser parser, HashMap<String, StanzaChild> childParsers) throws XmlPullParserException, java.io.IOException {
         Presence p = new Presence();
         p.parseStanza(parser);
 
@@ -70,9 +71,14 @@ public class Presence extends Stanza {
                     }
                 }
             } else if (xmlns != null) {
-                ChildElement child = Stanza.parseChild(xmlns, parser);
-                if (child != null) {
-                    p.addChild(child);
+                StanzaChild childparser = childParsers.get(xmlns);
+                if (childparser != null) {
+                    StanzaChild child = childparser.parse(parser);
+                    if (child != null) {
+                        p.addChild(child);
+                    } else {
+                        XmlUtils.skip(parser);
+                    }
                 } else {
                     XmlUtils.skip(parser);
                 }

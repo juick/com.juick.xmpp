@@ -26,7 +26,7 @@ import org.xmlpull.v1.XmlPullParserException;
  * http://xmpp.org/extensions/inbox/tictactoe.html
  * @author Ugnich Anton
  */
-public class GameTicTacToe implements ChildElement {
+public class GameTicTacToe implements StanzaChild {
 
     public final static String TagName = "move";
     public final static String XMLNS = "http://jabber.org/protocol/games/tictactoe";
@@ -39,7 +39,8 @@ public class GameTicTacToe implements ChildElement {
         return XMLNS;
     }
 
-    public static GameTicTacToe parse(final XmlPullParser parser) throws XmlPullParserException, IOException {
+    @Override
+    public GameTicTacToe parse(final XmlPullParser parser) throws XmlPullParserException, IOException {
         GameTicTacToe ttt = new GameTicTacToe();
         String str = parser.getAttributeValue(null, "id");
         if (str != null) {

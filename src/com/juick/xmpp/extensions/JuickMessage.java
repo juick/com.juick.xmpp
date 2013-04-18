@@ -26,7 +26,7 @@ import org.xmlpull.v1.XmlPullParserException;
  *
  * @author Ugnich Anton
  */
-public class JuickMessage extends com.juick.Message implements ChildElement {
+public class JuickMessage extends com.juick.Message implements StanzaChild {
 
     public final static String XMLNS = "http://juick.com/message";
     public final static String TagName = "juick";
@@ -43,7 +43,8 @@ public class JuickMessage extends com.juick.Message implements ChildElement {
         return XMLNS;
     }
 
-    public static JuickMessage parse(XmlPullParser parser) throws XmlPullParserException, IOException {
+    @Override
+    public JuickMessage parse(XmlPullParser parser) throws XmlPullParserException, IOException {
         JuickMessage jmsg = new JuickMessage();
 
         final String sMID = parser.getAttributeValue(null, "mid");
@@ -70,7 +71,7 @@ public class JuickMessage extends com.juick.Message implements ChildElement {
             if (tag.equals("body")) {
                 jmsg.Text = XmlUtils.getTagText(parser);
             } else if (tag.equals(JuickUser.TagName) && xmlns != null && xmlns.equals(JuickUser.XMLNS)) {
-                jmsg.User = JuickUser.parse(parser);
+                jmsg.User = new JuickUser().parse(parser);
             } else if (tag.equals("tag")) {
                 jmsg.Tags.add(XmlUtils.getTagText(parser));
             } else {

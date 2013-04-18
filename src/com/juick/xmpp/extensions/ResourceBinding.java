@@ -26,7 +26,7 @@ import org.xmlpull.v1.XmlPullParserException;
  * http://xmpp.org/rfcs/rfc3920.html#bind
  * @author Ugnich Anton
  */
-public class ResourceBinding implements ChildElement {
+public class ResourceBinding implements StanzaChild {
 
     public final static String XMLNS = "urn:ietf:params:xml:ns:xmpp-bind";
     public final static String TagName = "bind";
@@ -38,7 +38,8 @@ public class ResourceBinding implements ChildElement {
         return XMLNS;
     }
 
-    public static ResourceBinding parse(XmlPullParser parser) throws XmlPullParserException, IOException {
+    @Override
+    public ResourceBinding parse(XmlPullParser parser) throws XmlPullParserException, IOException {
         ResourceBinding rb = new ResourceBinding();
 
         while (parser.next() == XmlPullParser.START_TAG) {

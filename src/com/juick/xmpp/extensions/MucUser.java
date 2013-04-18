@@ -28,7 +28,7 @@ import org.xmlpull.v1.XmlPullParserException;
  *
  * @author Ugnich Anton
  */
-public class MucUser implements ChildElement {
+public class MucUser implements StanzaChild {
 
     public final static String XMLNS = "http://jabber.org/protocol/muc#user";
     public final static String TagName = "x";
@@ -57,7 +57,8 @@ public class MucUser implements ChildElement {
         status.addElement(new Integer(code));
     }
 
-    public static MucUser parse(XmlPullParser parser) throws XmlPullParserException, IOException {
+    @Override
+    public MucUser parse(XmlPullParser parser) throws XmlPullParserException, IOException {
         MucUser di = new MucUser();
 
         while (parser.next() == XmlPullParser.START_TAG) {

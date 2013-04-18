@@ -18,6 +18,7 @@
 package com.juick.xmpp;
 
 import java.util.Enumeration;
+import java.util.HashMap;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -40,7 +41,7 @@ public class Message extends Stanza {
     public String body = null;
     public String thread = null;
 
-    public static Message parse(XmlPullParser parser) throws XmlPullParserException, java.io.IOException {
+    public static Message parse(XmlPullParser parser, HashMap<String, StanzaChild> childParsers) throws XmlPullParserException, java.io.IOException {
         Message msg = new Message();
         msg.parseStanza(parser);
 
@@ -54,9 +55,14 @@ public class Message extends Stanza {
             } else if (tag.equals("thread")) {
                 msg.thread = XmlUtils.getTagText(parser);
             } else if (xmlns != null) {
-                ChildElement child = Stanza.parseChild(xmlns, parser);
-                if (child != null) {
-                    msg.addChild(child);
+                StanzaChild childparser = childParsers.get(xmlns);
+                if (childparser != null) {
+                    StanzaChild child = childparser.parse(parser);
+                    if (child != null) {
+                        msg.addChild(child);
+                    } else {
+                        XmlUtils.skip(parser);
+                    }
                 } else {
                     XmlUtils.skip(parser);
                 }

@@ -26,7 +26,7 @@ import org.xmlpull.v1.XmlPullParserException;
  * http://xmpp.org/extensions/xep-0080.html
  * @author Ugnich Anton
  */
-public class GeoLoc implements ChildElement {
+public class GeoLoc implements StanzaChild {
 
     public final static String XMLNS = "http://jabber.org/protocol/geoloc";
     public final static String TagName = "geoloc";
@@ -42,7 +42,8 @@ public class GeoLoc implements ChildElement {
         return XMLNS;
     }
 
-    public static GeoLoc parse(XmlPullParser parser) throws XmlPullParserException, IOException {
+    @Override
+    public GeoLoc parse(XmlPullParser parser) throws XmlPullParserException, IOException {
         GeoLoc geoloc = new GeoLoc();
 
         while (parser.next() == XmlPullParser.START_TAG) {

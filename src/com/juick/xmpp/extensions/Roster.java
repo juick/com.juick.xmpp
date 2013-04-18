@@ -28,7 +28,7 @@ import org.xmlpull.v1.XmlPullParserException;
  * http://xmpp.org/rfcs/rfc3921.html#roster
  * @author Ugnich Anton
  */
-public class Roster implements ChildElement {
+public class Roster implements StanzaChild {
 
     public final static String XMLNS = "jabber:iq:roster";
     public final static String TagName = "query";
@@ -39,7 +39,8 @@ public class Roster implements ChildElement {
         return XMLNS;
     }
 
-    public static Roster parse(XmlPullParser parser) throws XmlPullParserException, IOException {
+    @Override
+    public Roster parse(XmlPullParser parser) throws XmlPullParserException, IOException {
         Roster roster = new Roster();
 
         while (parser.next() == XmlPullParser.START_TAG) {

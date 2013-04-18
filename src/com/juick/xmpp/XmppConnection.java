@@ -17,9 +17,13 @@
  */
 package com.juick.xmpp;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import javax.net.ssl.SSLSocketFactory;
 import org.xmlpull.mxp1.MXParser;
 import org.xmlpull.v1.XmlPullParser;
@@ -38,6 +42,7 @@ public abstract class XmppConnection extends Thread {
     private boolean use_ssl;
     protected XmlPullParser parser;
     protected OutputStreamWriter writer;
+    HashMap<String, StanzaChild> childParsers = new HashMap<String, StanzaChild>();
     ArrayList<XmppListener> listenersXmpp = new ArrayList<XmppListener>();
     ArrayList<MessageListener> listenersMessage = new ArrayList<MessageListener>();
     ArrayList<PresenceListener> listenersPresence = new ArrayList<PresenceListener>();
@@ -94,6 +99,14 @@ public abstract class XmppConnection extends Thread {
         } catch (final Exception e) {
             connectionFailed(e.toString());
         }
+    }
+
+    public void addChildParser(StanzaChild childparser) {
+        childParsers.put(childparser.getXMLNS(), childparser);
+    }
+
+    public void removeChildParser(final String xmlns) {
+        childParsers.remove(xmlns);
     }
 
     public void addListener(final XmppListener l) {
@@ -166,19 +179,19 @@ public abstract class XmppConnection extends Thread {
         while (parser.next() == XmlPullParser.START_TAG) {
             final String tag = parser.getName();
             if (tag.equals("message")) {
-                Message msg = Message.parse(parser);
+                Message msg = Message.parse(parser, childParsers);
                 for (Iterator it = listenersMessage.iterator(); it.hasNext();) {
                     MessageListener l = (MessageListener) it.next();
                     l.onMessage(msg);
                 }
             } else if (tag.equals("presence")) {
-                Presence p = Presence.parse(parser);
+                Presence p = Presence.parse(parser, childParsers);
                 for (Iterator it = listenersPresence.iterator(); it.hasNext();) {
                     PresenceListener l = (PresenceListener) it.next();
                     l.onPresence(p);
                 }
             } else if (tag.equals("iq")) {
-                Iq iq = Iq.parse(parser);
+                Iq iq = Iq.parse(parser, childParsers);
                 if (iq.from == null) {
                     iq.from = new JID(this.jid.Host);
                 }

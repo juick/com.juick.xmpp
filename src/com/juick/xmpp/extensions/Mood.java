@@ -26,7 +26,7 @@ import org.xmlpull.v1.XmlPullParserException;
  * http://xmpp.org/extensions/xep-0107.html
  * @author Ugnich Anton
  */
-public class Mood implements ChildElement {
+public class Mood implements StanzaChild {
 
     public final static String XMLNS = "http://jabber.org/protocol/mood";
     public final static String TagName = "mood";
@@ -39,7 +39,8 @@ public class Mood implements ChildElement {
         return XMLNS;
     }
 
-    public static Mood parse(XmlPullParser parser) throws XmlPullParserException, IOException {
+    @Override
+    public Mood parse(XmlPullParser parser) throws XmlPullParserException, IOException {
         Mood mood = new Mood();
 
         while (parser.next() == XmlPullParser.START_TAG) {

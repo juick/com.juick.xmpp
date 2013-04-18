@@ -26,7 +26,7 @@ import org.xmlpull.v1.XmlPullParserException;
  *
  * @author Ugnich Anton
  */
-public class XConference implements ChildElement {
+public class XConference implements StanzaChild {
 
     public final static String XMLNS = "jabber:x:conference";
     public final static String TagName = "x";
@@ -38,7 +38,8 @@ public class XConference implements ChildElement {
         return XMLNS;
     }
 
-    public static XConference parse(XmlPullParser parser) throws XmlPullParserException, IOException {
+    @Override
+    public XConference parse(XmlPullParser parser) throws XmlPullParserException, IOException {
         XConference xc = new XConference();
         xc.jid = parser.getAttributeValue(null, "jid");
         xc.reason = parser.getAttributeValue(null, "reason");

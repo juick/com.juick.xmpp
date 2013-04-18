@@ -26,7 +26,7 @@ import org.xmlpull.v1.XmlPullParserException;
  *
  * @author Ugnich Anton
  */
-public class Delay implements ChildElement {
+public class Delay implements StanzaChild {
 
     public final static String XMLNS = "urn:xmpp:delay";
     public final static String TagName = "delay";
@@ -39,7 +39,8 @@ public class Delay implements ChildElement {
         return XMLNS;
     }
 
-    public static Delay parse(XmlPullParser parser) throws XmlPullParserException, IOException {
+    @Override
+    public Delay parse(XmlPullParser parser) throws XmlPullParserException, IOException {
         Delay delay = new Delay();
 
         String from = parser.getAttributeValue(null, "from");

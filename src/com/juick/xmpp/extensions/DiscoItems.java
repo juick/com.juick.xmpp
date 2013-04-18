@@ -28,7 +28,7 @@ import org.xmlpull.v1.XmlPullParserException;
  *
  * @author Ugnich Anton
  */
-public class DiscoItems implements ChildElement {
+public class DiscoItems implements StanzaChild {
 
     public final static String XMLNS = "http://jabber.org/protocol/disco#items";
     public final static String TagName = "query";
@@ -46,7 +46,8 @@ public class DiscoItems implements ChildElement {
         items.addElement(i);
     }
 
-    public static DiscoItems parse(XmlPullParser parser) throws XmlPullParserException, IOException {
+    @Override
+    public DiscoItems parse(XmlPullParser parser) throws XmlPullParserException, IOException {
         DiscoItems di = new DiscoItems();
 
         while (parser.next() == XmlPullParser.START_TAG) {

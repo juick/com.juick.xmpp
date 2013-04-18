@@ -17,12 +17,9 @@
  */
 package com.juick.xmpp;
 
-import com.juick.xmpp.extensions.*;
-import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Vector;
 import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
 
 /**
  *
@@ -36,7 +33,7 @@ public class Stanza {
     public String type = null;
     public Vector childs = new Vector();
 
-    public void addChild(ChildElement child) {
+    public void addChild(StanzaChild child) {
         childs.addElement(child);
     }
 
@@ -44,9 +41,9 @@ public class Stanza {
         return !childs.isEmpty();
     }
 
-    public ChildElement getChild(String XMLNS) {
+    public StanzaChild getChild(String XMLNS) {
         for (Enumeration e = childs.elements(); e.hasMoreElements();) {
-            ChildElement ce = (ChildElement) e.nextElement();
+            StanzaChild ce = (StanzaChild) e.nextElement();
             if (ce.getXMLNS().equals(XMLNS)) {
                 return ce;
             }
@@ -67,35 +64,6 @@ public class Stanza {
 
         id = parser.getAttributeValue(null, "id");
         type = parser.getAttributeValue(null, "type");
-    }
-
-    public static ChildElement parseChild(final String xmlns, XmlPullParser parser) throws XmlPullParserException, IOException {
-        if (xmlns.equals(ResourceBinding.XMLNS)) {
-            return ResourceBinding.parse(parser);
-        } else if (xmlns.equals(Roster.XMLNS)) {
-            return Roster.parse(parser);
-        } else if (xmlns.equals(DiscoInfo.XMLNS)) {
-            return DiscoInfo.parse(parser);
-        } else if (xmlns.equals(DiscoItems.XMLNS)) {
-            return DiscoItems.parse(parser);
-        } else if (xmlns.equals(JuickMessage.XMLNS)) {
-            return JuickMessage.parse(parser);
-        } else if (xmlns.equals(JuickUser.XMLNS)) {
-            return JuickUser.parse(parser);
-        } else if (xmlns.equals(Games.XMLNS)) {
-            return Games.parse(parser);
-        } else if (xmlns.equals(GameTicTacToe.XMLNS)) {
-            return GameTicTacToe.parse(parser);
-        } else if (xmlns.equals(GeoLoc.XMLNS)) {
-            return GeoLoc.parse(parser);
-        } else if (xmlns.equals(Mood.XMLNS)) {
-            return Mood.parse(parser);
-        } else if (xmlns.equals(MucUser.XMLNS)) {
-            return MucUser.parse(parser);
-        } else if (xmlns.equals(Delay.XMLNS)) {
-            return Delay.parse(parser);
-        }
-        return null;
     }
 
     @Override

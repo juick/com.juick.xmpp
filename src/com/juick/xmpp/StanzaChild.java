@@ -1,6 +1,6 @@
 /*
  * Juick
- * Copyright (C) 2008-2011, Ugnich Anton
+ * Copyright (C) 2008-2013, Ugnich Anton
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,11 +17,20 @@
  */
 package com.juick.xmpp;
 
+import java.io.IOException;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
 /**
  *
  * @author Ugnich Anton
  */
-public interface ChildElement {
+public interface StanzaChild {
 
     public String getXMLNS();
+
+    public StanzaChild parse(XmlPullParser parser) throws XmlPullParserException, IOException;
+
+    @Override
+    public String toString();
 }

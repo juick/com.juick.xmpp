@@ -20,7 +20,6 @@ package com.juick.xmpp;
 import com.juick.xmpp.utils.Base64;
 import com.juick.xmpp.extensions.ResourceBinding;
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -85,6 +84,7 @@ public class XmppConnectionClient extends XmppConnection implements IqListener {
         Iq bind = new Iq();
         bind.type = Iq.Type.set;
         ResourceBinding rb = new ResourceBinding();
+        addChildParser(new ResourceBinding());
         addListener(this.server, bind.id, this);
 
         if (jid.Resource != null && jid.Resource.length() > 0) {
@@ -111,7 +111,7 @@ public class XmppConnectionClient extends XmppConnection implements IqListener {
         if (iq.childs.isEmpty()) {
             return false;
         }
-        String xmlns = ((ChildElement) iq.childs.get(0)).getXMLNS();
+        String xmlns = ((StanzaChild) iq.childs.get(0)).getXMLNS();
         if (xmlns.equals(ResourceBinding.XMLNS)) {
             ResourceBinding rb = (ResourceBinding) iq.childs.get(0);
             if (rb.jid != null) {

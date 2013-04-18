@@ -26,7 +26,7 @@ import org.xmlpull.v1.XmlPullParserException;
  *
  * @author Ugnich Anton
  */
-public class JuickUser extends com.juick.User implements ChildElement {
+public class JuickUser extends com.juick.User implements StanzaChild {
 
     public final static String XMLNS = "http://juick.com/user";
     public final static String TagName = "user";
@@ -36,7 +36,8 @@ public class JuickUser extends com.juick.User implements ChildElement {
         return XMLNS;
     }
 
-    public static JuickUser parse(final XmlPullParser parser) throws XmlPullParserException, IOException {
+    @Override
+    public JuickUser parse(final XmlPullParser parser) throws XmlPullParserException, IOException {
         JuickUser juser = new JuickUser();
         String strUID = parser.getAttributeValue(null, "uid");
         if (strUID != null) {
