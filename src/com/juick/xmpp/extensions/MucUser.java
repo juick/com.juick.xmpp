@@ -17,6 +17,7 @@
  */
 package com.juick.xmpp.extensions;
 
+import com.juick.xmpp.utils.XmlUtils;
 import com.juick.xmpp.*;
 import java.io.IOException;
 import java.util.Enumeration;

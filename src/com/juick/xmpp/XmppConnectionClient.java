@@ -17,6 +17,7 @@
  */
 package com.juick.xmpp;
 
+import com.juick.xmpp.utils.XmlUtils;
 import com.juick.xmpp.utils.Base64;
 import com.juick.xmpp.extensions.ResourceBinding;
 import java.io.IOException;

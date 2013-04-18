@@ -17,6 +17,7 @@
  */
 package com.juick.xmpp;
 
+import com.juick.xmpp.utils.XmlUtils;
 import java.util.Enumeration;
 import java.util.Vector;
 import org.xmlpull.v1.XmlPullParser;
