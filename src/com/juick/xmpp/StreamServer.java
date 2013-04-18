@@ -18,6 +18,8 @@
 package com.juick.xmpp;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -27,13 +29,13 @@ import org.xmlpull.v1.XmlPullParserException;
  */
 public class StreamServer extends Stream {
 
-    public StreamServer(final JID jid, final String password, final String server, final int port, final boolean use_ssl) {
-        super(jid, password, server, port, use_ssl);
+    public StreamServer(JID from, JID to, InputStream is, OutputStream os) {
+        super(from, to, is, os);
     }
 
     @Override
-    public void login() throws XmlPullParserException, IOException {
-        String msg = "<?xml version='1.0'?><stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:server' xmlns:db='jabber:server:dialback' to='" + jid.toString() + "' version='1.0'>";
+    public void openStream() throws XmlPullParserException, IOException {
+        String msg = "<?xml version='1.0'?><stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:server' xmlns:db='jabber:server:dialback' to='" + to.toString() + "' version='1.0'>";
         writer.write(msg);
         writer.flush();
         /*
@@ -44,9 +46,9 @@ public class StreamServer extends Stream {
         </stream:features>
          */
         parser.next(); // stream:stream
-        String id = parser.getAttributeValue(null, "id");
-        String from = parser.getAttributeValue(null, "from");
-        if (from == null || !from.equals(jid.toString())) {
+        String sid = parser.getAttributeValue(null, "id");
+        String sfrom = parser.getAttributeValue(null, "from");
+        if (sfrom == null || !sfrom.equals(to.toString())) {
             loggedIn = false;
             for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
                 it.next().onAuthFailed("stream:stream, failed authentication");

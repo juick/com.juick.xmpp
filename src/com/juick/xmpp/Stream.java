@@ -19,13 +19,13 @@ package com.juick.xmpp;
 
 import com.juick.xmpp.utils.XmlUtils;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import javax.net.ssl.SSLSocketFactory;
 import org.xmlpull.mxp1.MXParser;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -55,11 +55,9 @@ public abstract class Stream extends Thread {
          */
         public void onAuthFailed(final String message);
     }
-    public JID jid;
-    String password;
-    String server;
-    private int port;
-    private boolean use_ssl;
+    public JID from;
+    public JID to;
+    protected InputStream is;
     protected XmlPullParser parser;
     protected OutputStreamWriter writer;
     HashMap<String, StanzaChild> childParsers = new HashMap<String, StanzaChild>();
@@ -69,52 +67,25 @@ public abstract class Stream extends Thread {
     ArrayList<Iq.IqListener> listenersIq = new ArrayList<Iq.IqListener>();
     HashMap<String, Iq.IqListener> listenersIqId = new HashMap<String, Iq.IqListener>();
     boolean loggedIn;
-    Socket connection;
 
-    public boolean openStreams(final String host, int port, boolean use_ssl) {
-        try {
-            if (!use_ssl) {
-                connection = new Socket(host, port);
-            } else {
-                connection = SSLSocketFactory.getDefault().createSocket(host, port);
-            }
-            restartParser();
-            writer = new OutputStreamWriter(connection.getOutputStream());
-        } catch (Exception e) {
-            connectionFailed(e.toString());
-            return false;
-        }
-        return true;
+    public Stream(final JID from, final JID to, final InputStream is, final OutputStream os) {
+        this.from = from;
+        this.to = to;
+        this.is = is;
+        writer = new OutputStreamWriter(os);
     }
 
     public void restartParser() throws XmlPullParserException, IOException {
         parser = new MXParser();
-        parser.setInput(new InputStreamReader(connection.getInputStream()));
+        parser.setInput(new InputStreamReader(is));
         parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
-    }
-
-    public Stream(final JID jid, final String password, final String server, final int port, final boolean use_ssl) {
-        this.jid = jid;
-        this.password = password;
-        if (server == null || server.length() == 0) {
-            this.server = jid.Host;
-        } else {
-            this.server = server;
-        }
-        this.port = port;
-        this.use_ssl = use_ssl;
-        loggedIn = false;
     }
 
     @Override
     public void run() {
-        if (!openStreams(server, port, use_ssl)) {
-            return;
-        }
-
-        // connected
         try {
-            login();
+            restartParser();
+            openStream();
             parse();
         } catch (final Exception e) {
             connectionFailed(e.toString());
@@ -173,7 +144,7 @@ public abstract class Stream extends Thread {
         return listenersIq.remove(l);
     }
 
-    public abstract void login() throws XmlPullParserException, IOException;
+    public abstract void openStream() throws XmlPullParserException, IOException;
 
     public void logoff() {
         loggedIn = false;
@@ -210,10 +181,7 @@ public abstract class Stream extends Thread {
                 }
             } else if (tag.equals("iq")) {
                 Iq iq = Iq.parse(parser, childParsers);
-                if (iq.from == null) {
-                    iq.from = new JID(this.jid.Host);
-                }
-                final String key = iq.from.toString() + "\n" + iq.id;
+                final String key = (iq.from == null) ? "" : iq.from.toString() + "\n" + iq.id;
                 boolean parsed = false;
                 if (listenersIqId.containsKey(key)) {
                     Iq.IqListener l = (Iq.IqListener) listenersIqId.get(key);

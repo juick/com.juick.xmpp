@@ -19,6 +19,8 @@ package com.juick.xmpp;
 
 import com.juick.xmpp.utils.SHA1;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -28,20 +30,23 @@ import org.xmlpull.v1.XmlPullParserException;
  */
 public class StreamComponent extends Stream {
 
-    public StreamComponent(final JID jid, final String password, final String server, final int port, final boolean use_ssl) {
-        super(jid, password, server, port, use_ssl);
+    String password;
+
+    public StreamComponent(JID from, JID to, InputStream is, OutputStream os, String password) {
+        super(from, to, is, os);
+        this.password = password;
     }
 
     @Override
-    public void login() throws XmlPullParserException, IOException {
-        String msg = "<stream:stream xmlns='jabber:component:accept' xmlns:stream='http://etherx.jabber.org/streams' to='" + jid.toString() + "'>";
+    public void openStream() throws XmlPullParserException, IOException {
+        String msg = "<stream:stream xmlns='jabber:component:accept' xmlns:stream='http://etherx.jabber.org/streams' to='" + to.toString() + "'>";
         writer.write(msg);
         writer.flush();
 
         parser.next(); // stream:stream
-        String id = parser.getAttributeValue(null, "id");
-        String from = parser.getAttributeValue(null, "from");
-        if (from == null || !from.equals(jid.toString())) {
+        String sid = parser.getAttributeValue(null, "id");
+        String sfrom = parser.getAttributeValue(null, "from");
+        if (sfrom == null || !sfrom.equals(to.toString())) {
             loggedIn = false;
             for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
                 it.next().onAuthFailed("stream:stream, failed authentication");
@@ -49,7 +54,7 @@ public class StreamComponent extends Stream {
             return;
         }
 
-        msg = "<handshake>" + SHA1.encode(id + password) + "</handshake>";
+        msg = "<handshake>" + SHA1.encode(sid + password) + "</handshake>";
         writer.write(msg);
         writer.flush();
 

@@ -21,10 +21,11 @@ import com.juick.xmpp.utils.XmlUtils;
 import com.juick.xmpp.utils.Base64;
 import com.juick.xmpp.extensions.ResourceBinding;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
-
 
 /**
  *
@@ -33,14 +34,16 @@ import org.xmlpull.v1.XmlPullParserException;
 public class StreamClient extends Stream implements Iq.IqListener {
 
     public final static String XMLNS = "urn:ietf:params:xml:ns:xmpp-session";
+    String password;
 
-    public StreamClient(final JID jid, final String password, final String server, final int port, final boolean use_ssl) {
-        super(jid, password, server, port, use_ssl);
+    public StreamClient(JID from, JID to, InputStream is, OutputStream os, String password) {
+        super(from, to, is, os);
+        this.password = password;
     }
 
     @Override
-    public void login() throws XmlPullParserException, IOException {
-        String msg = "<stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' to='" + jid.Host + "' version='1.0'>";
+    public void openStream() throws XmlPullParserException, IOException {
+        String msg = "<stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' to='" + to.Host + "' version='1.0'>";
         writer.write(msg);
         writer.flush();
         parser.next(); // stream:stream
@@ -55,7 +58,7 @@ public class StreamClient extends Stream implements Iq.IqListener {
         }
 
         msg = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>";
-        byte[] auth_msg = (jid.Bare() + '\0' + jid.Username + '\0' + password).getBytes();
+        byte[] auth_msg = (from.Bare() + '\0' + from.Username + '\0' + password).getBytes();
         msg = msg + Base64.encode(auth_msg) + "</auth>";
         writer.write(msg);
         writer.flush();
@@ -73,7 +76,7 @@ public class StreamClient extends Stream implements Iq.IqListener {
             return;
         }
 
-        msg = "<stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' to='" + jid.Host + "' version='1.0'>";
+        msg = "<stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' to='" + to.Host + "' version='1.0'>";
         writer.write(msg);
         writer.flush();
         restartParser();
@@ -85,10 +88,10 @@ public class StreamClient extends Stream implements Iq.IqListener {
         bind.type = Iq.Type.set;
         ResourceBinding rb = new ResourceBinding();
         addChildParser(new ResourceBinding());
-        addListener(this.server, bind.id, this);
+        addListener(to.Host, bind.id, this);
 
-        if (jid.Resource != null && jid.Resource.length() > 0) {
-            rb.resource = jid.Resource;
+        if (from.Resource != null && from.Resource.length() > 0) {
+            rb.resource = from.Resource;
         }
         bind.addChild(rb);
         writer.write(bind.toString());
@@ -115,10 +118,10 @@ public class StreamClient extends Stream implements Iq.IqListener {
         if (xmlns.equals(ResourceBinding.XMLNS)) {
             ResourceBinding rb = (ResourceBinding) iq.childs.get(0);
             if (rb.jid != null) {
-                jid.Resource = rb.jid.Resource;
+                from.Resource = rb.jid.Resource;
             }
             for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
-                it.next().onAuth(jid.Resource);
+                it.next().onAuth(from.Resource);
             }
             session();
 
@@ -131,6 +134,7 @@ public class StreamClient extends Stream implements Iq.IqListener {
         return false;
     }
 }
+
 class XmppStreamFeatures {
 
     public static final int NOTAVAILABLE = -1;
