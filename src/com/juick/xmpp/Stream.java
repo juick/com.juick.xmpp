@@ -38,22 +38,9 @@ public abstract class Stream extends Thread {
 
     public interface StreamListener {
 
-        /**
-         * This event is sent when a parser or connection error occurs.
-         */
-        public void onConnectionFailed(final String msg);
+        public void onStreamReady();
 
-        /**
-         * This event occurs when the login/authentication process succeeds.
-         */
-        public void onAuth(final String resource);
-
-        /**
-         * This event occurs when the login/authentication process fails.
-         *
-         * @param message some error information
-         */
-        public void onAuthFailed(final String message);
+        public void onStreamFail(final String msg);
     }
     public JID from;
     public JID to;
@@ -216,7 +203,7 @@ public abstract class Stream extends Thread {
         }
 
         for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
-            it.next().onConnectionFailed(msg);
+            it.next().onStreamFail(msg);
         }
     }
 }

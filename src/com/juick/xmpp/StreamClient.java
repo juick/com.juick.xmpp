@@ -53,7 +53,7 @@ public class StreamClient extends Stream implements Iq.IqListener {
         if (features.STARTTLS == StreamFeatures.REQUIRED || features.PLAIN == StreamFeatures.NOTAVAILABLE) {
             loggedIn = false;
             for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
-                it.next().onAuthFailed("stream:features, failed authentication");
+                it.next().onStreamFail("stream:features, failed authentication");
             }
             return;
         }
@@ -72,7 +72,7 @@ public class StreamClient extends Stream implements Iq.IqListener {
         } else {
             loggedIn = false;
             for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
-                it.next().onAuthFailed(parser.getName() + ", failed authentication");
+                it.next().onStreamFail(parser.getName() + ", failed authentication");
             }
             return;
         }
@@ -122,7 +122,7 @@ public class StreamClient extends Stream implements Iq.IqListener {
                 from.Resource = rb.jid.Resource;
             }
             for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
-                it.next().onAuth(from.Resource);
+                it.next().onStreamReady();
             }
             session();
 

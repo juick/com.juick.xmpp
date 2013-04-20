@@ -51,9 +51,13 @@ public class StreamServer extends Stream {
         if (sfrom == null || !sfrom.equals(to.toString())) {
             loggedIn = false;
             for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
-                it.next().onAuthFailed("stream:stream, failed authentication");
+                it.next().onStreamFail("stream:stream, failed authentication");
             }
             return;
+        }
+
+        for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
+            it.next().onStreamReady();
         }
     }
 }

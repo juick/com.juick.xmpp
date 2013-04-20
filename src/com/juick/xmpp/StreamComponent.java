@@ -49,7 +49,7 @@ public class StreamComponent extends Stream {
         if (sfrom == null || !sfrom.equals(to.toString())) {
             loggedIn = false;
             for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
-                it.next().onAuthFailed("stream:stream, failed authentication");
+                it.next().onStreamFail("stream:stream, failed authentication");
             }
             return;
         }
@@ -61,13 +61,15 @@ public class StreamComponent extends Stream {
         parser.next();
         if (parser.getName().equals("handshake")) {
             parser.next();
-            loggedIn = true;
+            loggedIn = true;            
+            for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
+                it.next().onStreamReady();
+            }
         } else {
             loggedIn = false;
             for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
-                it.next().onAuthFailed(parser.getName() + ", failed authentication");
+                it.next().onStreamFail(parser.getName() + ", failed authentication");
             }
-            return;
         }
     }
 }
