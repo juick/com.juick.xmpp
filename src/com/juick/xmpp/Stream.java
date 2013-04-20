@@ -48,7 +48,7 @@ public abstract class Stream extends Thread {
     protected XmlPullParser parser;
     protected OutputStreamWriter writer;
     HashMap<String, StanzaChild> childParsers = new HashMap<String, StanzaChild>();
-    ArrayList<StreamListener> listenersXmpp = new ArrayList<StreamListener>();
+    ArrayList<StreamListener> listenersStream = new ArrayList<StreamListener>();
     ArrayList<Message.MessageListener> listenersMessage = new ArrayList<Message.MessageListener>();
     ArrayList<Presence.PresenceListener> listenersPresence = new ArrayList<Presence.PresenceListener>();
     ArrayList<Iq.IqListener> listenersIq = new ArrayList<Iq.IqListener>();
@@ -88,8 +88,8 @@ public abstract class Stream extends Thread {
     }
 
     public void addListener(final StreamListener l) {
-        if (!listenersXmpp.contains(l)) {
-            listenersXmpp.add(l);
+        if (!listenersStream.contains(l)) {
+            listenersStream.add(l);
         }
     }
 
@@ -116,7 +116,7 @@ public abstract class Stream extends Thread {
     }
 
     public boolean removeListener(final StreamListener l) {
-        return listenersXmpp.remove(l);
+        return listenersStream.remove(l);
     }
 
     public boolean removeListener(final Message.MessageListener l) {
@@ -202,7 +202,7 @@ public abstract class Stream extends Thread {
             }
         }
 
-        for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
+        for (Iterator<StreamListener> it = listenersStream.iterator(); it.hasNext();) {
             it.next().onStreamFail(msg);
         }
     }

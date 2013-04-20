@@ -17,7 +17,6 @@
  */
 package com.juick.xmpp;
 
-import com.juick.xmpp.utils.XmlUtils;
 import com.juick.xmpp.utils.Base64;
 import com.juick.xmpp.extensions.ResourceBinding;
 import com.juick.xmpp.extensions.StreamFeatures;
@@ -52,7 +51,7 @@ public class StreamClient extends Stream implements Iq.IqListener {
         StreamFeatures features = StreamFeatures.parse(parser);
         if (features.STARTTLS == StreamFeatures.REQUIRED || features.PLAIN == StreamFeatures.NOTAVAILABLE) {
             loggedIn = false;
-            for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
+            for (Iterator<StreamListener> it = listenersStream.iterator(); it.hasNext();) {
                 it.next().onStreamFail("stream:features, failed authentication");
             }
             return;
@@ -71,7 +70,7 @@ public class StreamClient extends Stream implements Iq.IqListener {
             loggedIn = true;
         } else {
             loggedIn = false;
-            for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
+            for (Iterator<StreamListener> it = listenersStream.iterator(); it.hasNext();) {
                 it.next().onStreamFail(parser.getName() + ", failed authentication");
             }
             return;
@@ -121,7 +120,7 @@ public class StreamClient extends Stream implements Iq.IqListener {
             if (rb.jid != null) {
                 from.Resource = rb.jid.Resource;
             }
-            for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
+            for (Iterator<StreamListener> it = listenersStream.iterator(); it.hasNext();) {
                 it.next().onStreamReady();
             }
             session();

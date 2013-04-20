@@ -50,13 +50,13 @@ public class StreamServer extends Stream {
         String sfrom = parser.getAttributeValue(null, "from");
         if (sfrom == null || !sfrom.equals(to.toString())) {
             loggedIn = false;
-            for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
+            for (Iterator<StreamListener> it = listenersStream.iterator(); it.hasNext();) {
                 it.next().onStreamFail("stream:stream, failed authentication");
             }
             return;
         }
 
-        for (Iterator<StreamListener> it = listenersXmpp.iterator(); it.hasNext();) {
+        for (Iterator<StreamListener> it = listenersStream.iterator(); it.hasNext();) {
             it.next().onStreamReady();
         }
     }
