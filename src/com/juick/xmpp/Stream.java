@@ -34,7 +34,7 @@ import org.xmlpull.v1.XmlPullParserException;
  *
  * @author Ugnich Anton
  */
-public abstract class Stream extends Thread {
+public abstract class Stream {
 
     public interface StreamListener {
 
@@ -68,8 +68,7 @@ public abstract class Stream extends Thread {
         parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
     }
 
-    @Override
-    public void run() {
+    public void startParsing() {
         try {
             restartParser();
             openStream();
@@ -145,8 +144,12 @@ public abstract class Stream extends Thread {
     }
 
     public void send(final Stanza s) {
+        send(s.toString());
+    }
+
+    public void send(final String str) {
         try {
-            writer.write(s.toString());
+            writer.write(str);
             writer.flush();
         } catch (final Exception e) {
             connectionFailed(e.toString());
