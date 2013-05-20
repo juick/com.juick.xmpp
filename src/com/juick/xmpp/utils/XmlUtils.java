@@ -48,6 +48,31 @@ public class XmlUtils {
         return ret;
     }
 
+    public static String parseToString(XmlPullParser parser, boolean skipXMLNS) throws XmlPullParserException, IOException {
+        String tag = parser.getName();
+        String ret = "<" + tag;
+
+        for (int i = 0; i < parser.getAttributeCount(); i++) {
+            String attr = parser.getAttributeName(i);
+            if (!skipXMLNS || !attr.equals("xmlns")) {
+                ret += " " + attr + "=\"" + escape(parser.getAttributeValue(i)) + "\"";
+            }
+        }
+        ret += ">";
+
+        while (!(parser.next() == XmlPullParser.END_TAG && parser.getName().equals(tag))) {
+            int event = parser.getEventType();
+            if (event == XmlPullParser.START_TAG) {
+                ret += parseToString(parser, false);
+            } else if (event == XmlPullParser.TEXT) {
+                ret += escape(parser.getText());
+            }
+        }
+
+        ret += "</" + tag + ">";
+        return ret;
+    }
+
     public static String escape(String str) {
         String res = "";
         for (int i = 0; i < str.length(); i++) {
