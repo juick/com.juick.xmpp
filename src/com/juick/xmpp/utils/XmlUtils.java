@@ -54,7 +54,7 @@ public class XmlUtils {
 
         for (int i = 0; i < parser.getAttributeCount(); i++) {
             String attr = parser.getAttributeName(i);
-            if (!skipXMLNS || !attr.equals("xmlns")) {
+            if ((!skipXMLNS || !attr.equals("xmlns")) && !attr.contains(":")) {
                 ret += " " + attr + "=\"" + escape(parser.getAttributeValue(i)) + "\"";
             }
         }
@@ -63,7 +63,11 @@ public class XmlUtils {
         while (!(parser.next() == XmlPullParser.END_TAG && parser.getName().equals(tag))) {
             int event = parser.getEventType();
             if (event == XmlPullParser.START_TAG) {
-                ret += parseToString(parser, false);
+                if (!parser.getName().contains(":")) {
+                    ret += parseToString(parser, false);
+                } else {
+                    skip(parser);
+                }
             } else if (event == XmlPullParser.TEXT) {
                 ret += escape(parser.getText());
             }
