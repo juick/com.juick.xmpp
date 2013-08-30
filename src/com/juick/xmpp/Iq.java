@@ -80,22 +80,25 @@ public class Iq extends Stanza {
         Iq iq = new Iq();
         iq.parseStanza(parser);
 
-        while (parser.next() == XmlPullParser.START_TAG) {
-            final String xmlns = parser.getNamespace();
-            if (xmlns != null) {
-                StanzaChild childparser = childParsers.get(xmlns);
-                if (childparser != null) {
-                    StanzaChild child = childparser.parse(parser);
-                    if (child != null) {
-                        iq.addChild(child);
+        String currentTag = parser.getName();
+        while (!(parser.next() == XmlPullParser.END_TAG && parser.getName().equals(currentTag))) {
+            if (parser.getEventType() == XmlPullParser.START_TAG) {
+                final String xmlns = parser.getNamespace();
+                if (xmlns != null && childParsers != null) {
+                    StanzaChild childparser = childParsers.get(xmlns);
+                    if (childparser != null) {
+                        StanzaChild child = childparser.parse(parser);
+                        if (child != null) {
+                            iq.addChild(child);
+                        } else {
+                            XmlUtils.skip(parser);
+                        }
                     } else {
                         XmlUtils.skip(parser);
                     }
                 } else {
                     XmlUtils.skip(parser);
                 }
-            } else {
-                XmlUtils.skip(parser);
             }
         }
         return iq;

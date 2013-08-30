@@ -61,35 +61,38 @@ public class Presence extends Stanza {
         Presence p = new Presence();
         p.parseStanza(parser);
 
-        while (parser.next() == XmlPullParser.START_TAG) {
-            final String tag = parser.getName();
-            final String xmlns = parser.getNamespace();
-            if (tag.equals("status")) {
-                p.status = XmlUtils.getTagText(parser);
-            } else if (tag.equals("show")) {
-                p.show = XmlUtils.getTagText(parser);
-            } else if (tag.equals("priority")) {
-                String priority = XmlUtils.getTagText(parser);
-                if (priority.length() > 0) {
-                    try {
-                        p.priority = Integer.parseInt(priority);
-                    } catch (NumberFormatException e) {
+        String currentTag = parser.getName();
+        while (!(parser.next() == XmlPullParser.END_TAG && parser.getName().equals(currentTag))) {
+            if (parser.getEventType() == XmlPullParser.START_TAG) {
+                final String tag = parser.getName();
+                final String xmlns = parser.getNamespace();
+                if (tag.equals("status")) {
+                    p.status = XmlUtils.getTagText(parser);
+                } else if (tag.equals("show")) {
+                    p.show = XmlUtils.getTagText(parser);
+                } else if (tag.equals("priority")) {
+                    String priority = XmlUtils.getTagText(parser);
+                    if (priority.length() > 0) {
+                        try {
+                            p.priority = Integer.parseInt(priority);
+                        } catch (NumberFormatException e) {
+                        }
                     }
-                }
-            } else if (xmlns != null) {
-                StanzaChild childparser = childParsers.get(xmlns);
-                if (childparser != null) {
-                    StanzaChild child = childparser.parse(parser);
-                    if (child != null) {
-                        p.addChild(child);
+                } else if (xmlns != null && childParsers != null) {
+                    StanzaChild childparser = childParsers.get(xmlns);
+                    if (childparser != null) {
+                        StanzaChild child = childparser.parse(parser);
+                        if (child != null) {
+                            p.addChild(child);
+                        } else {
+                            XmlUtils.skip(parser);
+                        }
                     } else {
                         XmlUtils.skip(parser);
                     }
                 } else {
                     XmlUtils.skip(parser);
                 }
-            } else {
-                XmlUtils.skip(parser);
             }
         }
         return p;

@@ -32,8 +32,8 @@ public class StreamComponent extends Stream {
 
     String password;
 
-    public StreamComponent(JID from, JID to, InputStream is, OutputStream os, String password) {
-        super(from, to, is, os);
+    public StreamComponent(JID to, InputStream is, OutputStream os, String password) {
+        super(null, to, is, os);
         this.password = password;
     }
 

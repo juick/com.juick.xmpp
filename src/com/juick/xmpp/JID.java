@@ -23,21 +23,18 @@ package com.juick.xmpp;
  */
 public class JID {
 
-    public String Username;
-    public String Host;
-    public String Resource;
+    public String Username = null;
+    public String Host = null;
+    public String Resource = null;
 
     public JID(String jid) {
         int at = jid.indexOf('@');
-        if (at == -1) {
-            Username = "";
-        } else {
+        if (at > 0) {
             Username = jid.substring(0, at);
         }
         int slash = jid.indexOf('/');
         if (slash == -1) {
             Host = jid.substring(at + 1);
-            Resource = "";
         } else {
             Host = jid.substring(at + 1, slash);
             Resource = jid.substring(slash + 1);
@@ -51,10 +48,14 @@ public class JID {
     }
 
     public String Bare() {
-        if (Username.length() > 0) {
-            return Username + '@' + Host;
+        if (Host != null && Host.length() > 0) {
+            if (Username != null && Username.length() > 0) {
+                return Username + '@' + Host;
+            } else {
+                return Host;
+            }
         } else {
-            return Host;
+            return "";
         }
     }
 
@@ -63,7 +64,7 @@ public class JID {
     }
 
     public String toString() {
-        if (Resource.length() > 0) {
+        if (Resource != null && Resource.length() > 0) {
             return Bare() + '/' + Resource;
         } else {
             return Bare();

@@ -72,10 +72,10 @@ public class Stanza {
     public String toString() {
         String str = new String();
         if (from != null) {
-            str += " from='" + from.toString() + "'";
+            str += " from='" + XmlUtils.escape(from.toString()) + "'";
         }
         if (to != null) {
-            str += " to='" + to.toString() + "'";
+            str += " to='" + XmlUtils.escape(to.toString()) + "'";
         }
         if (id != null) {
             str += " id='" + XmlUtils.escape(id) + "'";
