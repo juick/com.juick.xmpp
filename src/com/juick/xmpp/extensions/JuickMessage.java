@@ -93,6 +93,9 @@ public class JuickMessage extends com.juick.Message implements StanzaChild {
         if (RID > 0) {
             ret += " rid=\"" + RID + "\"";
         }
+        if (ReplyTo > 0) {
+            ret += " replyto=\"" + ReplyTo + "\"";
+        }
         ret += " privacy=\"" + Privacy + "\"";
         if (TimestampString != null) {
             ret += " ts=\"" + TimestampString + "\"";
