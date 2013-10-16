@@ -47,6 +47,17 @@ public class Message extends Stanza {
     public String body = null;
     public String thread = null;
 
+    public Message() {
+    }
+
+    public Message(JID from, JID to) {
+        super(from, to);
+    }
+
+    public Message(JID from, JID to, String type) {
+        super(from, to, type);
+    }
+
     public static Message parse(XmlPullParser parser, HashMap<String, StanzaChild> childParsers) throws XmlPullParserException, java.io.IOException {
         Message msg = new Message();
         msg.parseStanza(parser);

@@ -43,6 +43,17 @@ public class Iq extends Stanza {
     }
     public final static String TagName = "iq";
 
+    public Iq() {
+    }
+
+    public Iq(JID from, JID to) {
+        super(from, to);
+    }
+
+    public Iq(JID from, JID to, String type) {
+        super(from, to, type);
+    }
+
     @Override
     public void addChild(StanzaChild child) {
         childs.clear();

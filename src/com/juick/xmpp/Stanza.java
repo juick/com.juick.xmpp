@@ -34,6 +34,20 @@ public class Stanza {
     public String type = null;
     public ArrayList<StanzaChild> childs = new ArrayList<StanzaChild>();
 
+    public Stanza() {
+    }
+
+    public Stanza(JID from, JID to) {
+        this.from = from;
+        this.to = to;
+    }
+
+    public Stanza(JID from, JID to, String type) {
+        this.from = from;
+        this.to = to;
+        this.type = type;
+    }
+
     public void addChild(StanzaChild child) {
         childs.add(child);
     }

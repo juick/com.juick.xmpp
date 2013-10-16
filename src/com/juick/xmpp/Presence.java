@@ -57,6 +57,17 @@ public class Presence extends Stanza {
     public String show = null; // away / chat / dnd / xa
     public String status = null;
 
+    public Presence() {
+    }
+
+    public Presence(JID from, JID to) {
+        super(from, to);
+    }
+
+    public Presence(JID from, JID to, String type) {
+        super(from, to, type);
+    }
+
     public static Presence parse(XmlPullParser parser, HashMap<String, StanzaChild> childParsers) throws XmlPullParserException, java.io.IOException {
         Presence p = new Presence();
         p.parseStanza(parser);
