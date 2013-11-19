@@ -37,7 +37,7 @@ public class Message extends Stanza {
     public static final class Type {
 
         public static final String chat = "chat";
-        public static final String error = "result";
+        public static final String error = "error";
         public static final String groupchat = "groupchat";
         public static final String headline = "headline";
         public static final String normal = "normal";
