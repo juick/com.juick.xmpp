@@ -52,6 +52,13 @@ public class XmlUtils {
         String tag = parser.getName();
         String ret = "<" + tag;
 
+        // skipXMLNS for xmlns="jabber:client"
+
+        String ns = parser.getNamespace();
+        if (!skipXMLNS && ns != null && !ns.isEmpty()) {
+            ret += " xmlns=\"" + ns + "\"";
+        }
+
         for (int i = 0; i < parser.getAttributeCount(); i++) {
             String attr = parser.getAttributeName(i);
             if ((!skipXMLNS || !attr.equals("xmlns")) && !attr.contains(":")) {
