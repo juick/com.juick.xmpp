@@ -64,6 +64,14 @@ public class JuickMessage extends com.juick.Message implements StanzaChild {
         if (sPrivacy != null) {
             jmsg.Privacy = Integer.parseInt(sPrivacy);
         }
+        final String sFriendsOnly = parser.getAttributeValue(null, "friendsonly");
+        if (sFriendsOnly != null) {
+            jmsg.FriendsOnly = true;
+        }
+        final String sReadOnly = parser.getAttributeValue(null, "readonly");
+        if (sReadOnly != null) {
+            jmsg.ReadOnly = true;
+        }
         jmsg.TimestampString = parser.getAttributeValue(null, "ts");
 
         while (parser.next() == XmlPullParser.START_TAG) {
@@ -97,6 +105,12 @@ public class JuickMessage extends com.juick.Message implements StanzaChild {
             ret += " replyto=\"" + ReplyTo + "\"";
         }
         ret += " privacy=\"" + Privacy + "\"";
+        if (FriendsOnly) {
+            ret += " friendsonly=\"1\"";
+        }
+        if (ReadOnly) {
+            ret += " readonly=\"1\"";
+        }
         if (TimestampString != null) {
             ret += " ts=\"" + TimestampString + "\"";
         }
