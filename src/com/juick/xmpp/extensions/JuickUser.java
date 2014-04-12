@@ -32,6 +32,13 @@ public class JuickUser extends com.juick.User implements StanzaChild {
     public final static String XMLNS = "http://juick.com/user";
     public final static String TagName = "user";
 
+    public JuickUser() {
+    }
+
+    public JuickUser(com.juick.User user) {
+        super(user);
+    }
+
     @Override
     public String getXMLNS() {
         return XMLNS;
