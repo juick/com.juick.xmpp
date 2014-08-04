@@ -73,6 +73,7 @@ public class JuickMessage extends com.juick.Message implements StanzaChild {
             jmsg.ReadOnly = true;
         }
         jmsg.TimestampString = parser.getAttributeValue(null, "ts");
+        jmsg.AttachmentType = parser.getAttributeValue(null, "attach");
 
         while (parser.next() == XmlPullParser.START_TAG) {
             final String tag = parser.getName();
@@ -113,6 +114,9 @@ public class JuickMessage extends com.juick.Message implements StanzaChild {
         }
         if (TimestampString != null) {
             ret += " ts=\"" + TimestampString + "\"";
+        }
+        if (AttachmentType != null) {
+            ret += " attach=\"" + AttachmentType + "\"";
         }
         ret += ">";
         if (User != null) {
