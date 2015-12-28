@@ -51,7 +51,7 @@ public class StreamServer extends Stream {
         if (sfrom == null || !sfrom.equals(to.toString())) {
             loggedIn = false;
             for (Iterator<StreamListener> it = listenersStream.iterator(); it.hasNext();) {
-                it.next().onStreamFail("stream:stream, failed authentication");
+                it.next().onStreamFail(new IOException("stream:stream, failed authentication"));
             }
             return;
         }

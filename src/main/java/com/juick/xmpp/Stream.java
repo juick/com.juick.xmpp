@@ -40,7 +40,7 @@ public abstract class Stream {
 
         public void onStreamReady();
 
-        public void onStreamFail(final String msg);
+        public void onStreamFail(final Exception ex);
     }
     public JID from;
     public JID to;
@@ -74,7 +74,7 @@ public abstract class Stream {
             openStream();
             parse();
         } catch (final Exception e) {
-            connectionFailed(e.toString());
+            connectionFailed(e);
         }
     }
 
@@ -139,7 +139,7 @@ public abstract class Stream {
             writer.close();
             //TODO close parser
         } catch (final Exception e) {
-            connectionFailed(e.toString());
+            connectionFailed(e);
         }
     }
 
@@ -152,7 +152,7 @@ public abstract class Stream {
             writer.write(str);
             writer.flush();
         } catch (final Exception e) {
-            connectionFailed(e.toString());
+            connectionFailed(e);
         }
     }
 
@@ -196,7 +196,7 @@ public abstract class Stream {
      * This method is used to be called on a parser or a connection error.
      * It tries to close the XML-Reader and XML-Writer one last time.
      */
-    protected void connectionFailed(final String msg) {
+    protected void connectionFailed(final Exception ex) {
         if (loggedIn) {
             try {
                 writer.close();
@@ -206,7 +206,7 @@ public abstract class Stream {
         }
 
         for (Iterator<StreamListener> it = listenersStream.iterator(); it.hasNext();) {
-            it.next().onStreamFail(msg);
+            it.next().onStreamFail(ex);
         }
     }
 }

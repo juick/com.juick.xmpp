@@ -49,7 +49,7 @@ public class StreamComponent extends Stream {
         if (sfrom == null || !sfrom.equals(to.toString())) {
             loggedIn = false;
             for (Iterator<StreamListener> it = listenersStream.iterator(); it.hasNext();) {
-                it.next().onStreamFail("stream:stream, failed authentication");
+                it.next().onStreamFail(new IOException("stream:stream, failed authentication"));
             }
             return;
         }
@@ -68,7 +68,7 @@ public class StreamComponent extends Stream {
         } else {
             loggedIn = false;
             for (Iterator<StreamListener> it = listenersStream.iterator(); it.hasNext();) {
-                it.next().onStreamFail(parser.getName() + ", failed authentication");
+                it.next().onStreamFail(new IOException(String.format("%s, failed authentication", parser.getName())));
             }
         }
     }

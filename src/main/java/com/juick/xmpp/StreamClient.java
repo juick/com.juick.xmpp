@@ -52,7 +52,7 @@ public class StreamClient extends Stream implements Iq.IqListener {
         if (features.STARTTLS == StreamFeatures.REQUIRED || features.PLAIN == StreamFeatures.NOTAVAILABLE) {
             loggedIn = false;
             for (Iterator<StreamListener> it = listenersStream.iterator(); it.hasNext();) {
-                it.next().onStreamFail("stream:features, failed authentication");
+                it.next().onStreamFail(new IOException("stream:features, failed authentication"));
             }
             return;
         }
@@ -71,7 +71,7 @@ public class StreamClient extends Stream implements Iq.IqListener {
         } else {
             loggedIn = false;
             for (Iterator<StreamListener> it = listenersStream.iterator(); it.hasNext();) {
-                it.next().onStreamFail(parser.getName() + ", failed authentication");
+                it.next().onStreamFail(new IOException(String.format("%s, failed authentication", parser.getName())));
             }
             return;
         }
@@ -105,7 +105,7 @@ public class StreamClient extends Stream implements Iq.IqListener {
             writer.flush();
         } catch (final Exception ex) {
             System.err.println(ex);
-            connectionFailed(ex.toString());
+            connectionFailed(ex);
         }
     }
 
