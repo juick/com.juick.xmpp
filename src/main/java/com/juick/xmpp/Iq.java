@@ -18,6 +18,8 @@
 package com.juick.xmpp;
 
 import com.juick.xmpp.utils.XmlUtils;
+
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParser;
@@ -87,7 +89,7 @@ public class Iq extends Stanza {
         return error;
     }
 
-    public static Iq parse(XmlPullParser parser, HashMap<String, StanzaChild> childParsers) throws XmlPullParserException, java.io.IOException {
+    public static Iq parse(XmlPullParser parser, HashMap<String, StanzaChild> childParsers) throws XmlPullParserException, java.io.IOException, ParseException {
         Iq iq = new Iq();
         iq.parseStanza(parser);
 

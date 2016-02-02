@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -156,7 +157,7 @@ public abstract class Stream {
         }
     }
 
-    private void parse() throws XmlPullParserException, IOException {
+    private void parse() throws XmlPullParserException, IOException, ParseException {
         while (parser.next() == XmlPullParser.START_TAG) {
             final String tag = parser.getName();
             if (tag.equals("message")) {

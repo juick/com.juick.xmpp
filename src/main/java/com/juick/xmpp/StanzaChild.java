@@ -18,6 +18,8 @@
 package com.juick.xmpp;
 
 import java.io.IOException;
+import java.text.ParseException;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -29,7 +31,7 @@ public interface StanzaChild {
 
     public String getXMLNS();
 
-    public StanzaChild parse(XmlPullParser parser) throws XmlPullParserException, IOException;
+    public StanzaChild parse(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException;
 
     @Override
     public String toString();
