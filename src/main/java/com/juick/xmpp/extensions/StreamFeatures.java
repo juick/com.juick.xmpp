@@ -40,51 +40,55 @@ public class StreamFeatures {
 
     public static StreamFeatures parse(final XmlPullParser parser) throws XmlPullParserException, IOException {
         StreamFeatures features = new StreamFeatures();
-
-        parser.next(); // Go in stream:features
-        while (parser.next() == XmlPullParser.START_TAG) {
-            final String tag = parser.getName();
-            final String xmlns = parser.getNamespace();
-            if (tag.equals("starttls") && xmlns != null && xmlns.equals("urn:ietf:params:xml:ns:xmpp-tls")) {
-                features.STARTTLS = AVAILABLE;
-                while (parser.next() == XmlPullParser.START_TAG) {
-                    if (parser.getName().equals("required")) {
-                        features.STARTTLS = REQUIRED;
-                    } else {
-                        XmlUtils.skip(parser);
-                    }
-                }
-            } else if (tag.equals("compression") && xmlns != null && xmlns.equals("http://jabber.org/features/compress")) {
-                while (parser.next() == XmlPullParser.START_TAG) {
-                    if (parser.getName().equals("method")) {
-                        final String method = XmlUtils.getTagText(parser).toUpperCase();
-                        if (method.equals("ZLIB")) {
-                            features.ZLIB = AVAILABLE;
+        final int initial = parser.getDepth();
+        while (true) {
+            int eventType = parser.next();
+            if (eventType == XmlPullParser.START_TAG && parser.getDepth() == initial + 1) {
+                final String tag = parser.getName();
+                final String xmlns = parser.getNamespace();
+                if (tag.equals("starttls") && xmlns != null && xmlns.equals("urn:ietf:params:xml:ns:xmpp-tls")) {
+                    features.STARTTLS = AVAILABLE;
+                    while (parser.next() == XmlPullParser.START_TAG) {
+                        if (parser.getName().equals("required")) {
+                            features.STARTTLS = REQUIRED;
+                        } else {
+                            XmlUtils.skip(parser);
                         }
-                    } else {
-                        XmlUtils.skip(parser);
                     }
-                }
-            } else if (tag.equals("mechanisms") && xmlns != null && xmlns.equals("urn:ietf:params:xml:ns:xmpp-sasl")) {
-                while (parser.next() == XmlPullParser.START_TAG) {
-                    if (parser.getName().equals("mechanism")) {
-                        final String mechanism = XmlUtils.getTagText(parser).toUpperCase();
-                        if (mechanism.equals("PLAIN")) {
-                            features.PLAIN = AVAILABLE;
-                        } else if (mechanism.equals("DIGEST-MD5")) {
-                            features.DIGEST_MD5 = AVAILABLE;
-                        } else if (mechanism.equals("X-GOOGLE-TOKEN")) {
-                            features.X_GOOGLE_TOKEN = AVAILABLE;
+                } else if (tag.equals("compression") && xmlns != null && xmlns.equals("http://jabber.org/features/compress")) {
+                    while (parser.next() == XmlPullParser.START_TAG) {
+                        if (parser.getName().equals("method")) {
+                            final String method = XmlUtils.getTagText(parser).toUpperCase();
+                            if (method.equals("ZLIB")) {
+                                features.ZLIB = AVAILABLE;
+                            }
+                        } else {
+                            XmlUtils.skip(parser);
                         }
-                    } else {
-                        XmlUtils.skip(parser);
                     }
+                } else if (tag.equals("mechanisms") && xmlns != null && xmlns.equals("urn:ietf:params:xml:ns:xmpp-sasl")) {
+                    while (parser.next() == XmlPullParser.START_TAG) {
+                        if (parser.getName().equals("mechanism")) {
+                            final String mechanism = XmlUtils.getTagText(parser).toUpperCase();
+                            if (mechanism.equals("PLAIN")) {
+                                features.PLAIN = AVAILABLE;
+                            } else if (mechanism.equals("DIGEST-MD5")) {
+                                features.DIGEST_MD5 = AVAILABLE;
+                            } else if (mechanism.equals("X-GOOGLE-TOKEN")) {
+                                features.X_GOOGLE_TOKEN = AVAILABLE;
+                            }
+                        } else {
+                            XmlUtils.skip(parser);
+                        }
+                    }
+                } else if (tag.equals("register") && xmlns != null && xmlns.equals("http://jabber.org/features/iq-register")) {
+                    features.REGISTER = AVAILABLE;
+                    XmlUtils.skip(parser);
+                } else {
+                    XmlUtils.skip(parser);
                 }
-            } else if (tag.equals("register") && xmlns != null && xmlns.equals("http://jabber.org/features/iq-register")) {
-                features.REGISTER = AVAILABLE;
-                XmlUtils.skip(parser);
-            } else {
-                XmlUtils.skip(parser);
+            } else if (eventType == XmlPullParser.END_TAG && parser.getDepth() == initial) {
+                break;
             }
         }
         return features;
