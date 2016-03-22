@@ -37,6 +37,15 @@ public class Stanza {
     public Stanza() {
     }
 
+    public Stanza(JID to) {
+        this.to = to;
+    }
+
+    public Stanza(JID to, String type) {
+        this.to = to;
+        this.type = type;
+    }
+
     public Stanza(JID from, JID to) {
         this.from = from;
         this.to = to;

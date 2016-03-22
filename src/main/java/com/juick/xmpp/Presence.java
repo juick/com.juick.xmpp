@@ -62,6 +62,10 @@ public class Presence extends Stanza {
     public Presence() {
     }
 
+    public Presence(JID to) {
+        super(to);
+    }
+
     public Presence(JID from, JID to) {
         super(from, to);
     }

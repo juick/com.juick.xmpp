@@ -52,6 +52,14 @@ public class Message extends Stanza {
     public Message() {
     }
 
+    public Message(JID to) {
+        super(to);
+    }
+
+    public Message(JID to, String type) {
+        super(to, type);
+    }
+
     public Message(JID from, JID to) {
         super(from, to);
     }
