@@ -18,12 +18,11 @@
 package com.juick.xmpp;
 
 import com.juick.xmpp.utils.XmlUtils;
-
-import java.text.ParseException;
-import java.util.HashMap;
-import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+
+import java.text.ParseException;
+import java.util.Map;
 
 /**
  *
@@ -33,7 +32,7 @@ public class Message extends Stanza {
 
     public interface MessageListener {
 
-        public void onMessage(final Message message);
+        void onMessage(final Message message);
     }
 
     public static final class Type {
@@ -68,7 +67,7 @@ public class Message extends Stanza {
         super(from, to, type);
     }
 
-    public static Message parse(XmlPullParser parser, HashMap<String, StanzaChild> childParsers) throws XmlPullParserException, java.io.IOException, ParseException {
+    public static Message parse(XmlPullParser parser, Map<String, StanzaChild> childParsers) throws XmlPullParserException, java.io.IOException, ParseException {
         Message msg = new Message();
         msg.parseStanza(parser);
 
@@ -128,9 +127,8 @@ public class Message extends Stanza {
             str += "<thread>" + XmlUtils.escape(thread) + "</thread>";
         }
 
-        Iterator<StanzaChild> i = childs.iterator();
-        while (i.hasNext()) {
-            str += i.next().toString();
+        for (StanzaChild child : childs) {
+            str += child.toString();
         }
 
         str += "</" + TagName + ">";

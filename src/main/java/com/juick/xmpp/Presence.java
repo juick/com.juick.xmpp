@@ -18,12 +18,11 @@
 package com.juick.xmpp;
 
 import com.juick.xmpp.utils.XmlUtils;
-
-import java.text.ParseException;
-import java.util.HashMap;
-import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+
+import java.text.ParseException;
+import java.util.Map;
 
 /**
  *
@@ -33,7 +32,7 @@ public class Presence extends Stanza {
 
     public interface PresenceListener {
 
-        public void onPresence(final Presence presence);
+        void onPresence(final Presence presence);
     }
 
     public static final class Type {
@@ -74,7 +73,7 @@ public class Presence extends Stanza {
         super(from, to, type);
     }
 
-    public static Presence parse(XmlPullParser parser, HashMap<String, StanzaChild> childParsers) throws XmlPullParserException, java.io.IOException, ParseException {
+    public static Presence parse(XmlPullParser parser, Map<String, StanzaChild> childParsers) throws XmlPullParserException, java.io.IOException, ParseException {
         Presence p = new Presence();
         p.parseStanza(parser);
 
@@ -138,9 +137,8 @@ public class Presence extends Stanza {
             str += "<status>" + XmlUtils.escape(status) + "</status>";
         }
 
-        Iterator<StanzaChild> i = childs.iterator();
-        while (i.hasNext()) {
-            str += i.next().toString();
+        for (StanzaChild child : childs) {
+            str += child.toString();
         }
 
         str += "</" + TagName + ">";

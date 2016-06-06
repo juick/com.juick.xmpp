@@ -18,12 +18,11 @@
 package com.juick.xmpp;
 
 import com.juick.xmpp.utils.XmlUtils;
-
-import java.text.ParseException;
-import java.util.HashMap;
-import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+
+import java.text.ParseException;
+import java.util.Map;
 
 /**
  *
@@ -33,7 +32,7 @@ public class Iq extends Stanza {
 
     public interface IqListener {
 
-        public boolean onIq(final Iq iq);
+        boolean onIq(final Iq iq);
     }
 
     public static final class Type {
@@ -89,7 +88,7 @@ public class Iq extends Stanza {
         return error;
     }
 
-    public static Iq parse(XmlPullParser parser, HashMap<String, StanzaChild> childParsers) throws XmlPullParserException, java.io.IOException, ParseException {
+    public static Iq parse(XmlPullParser parser, Map<String, StanzaChild> childParsers) throws XmlPullParserException, java.io.IOException, ParseException {
         Iq iq = new Iq();
         iq.parseStanza(parser);
 
@@ -120,9 +119,8 @@ public class Iq extends Stanza {
     @Override
     public String toString() {
         String str = "<" + TagName + super.toString() + ">";
-        Iterator<StanzaChild> i = childs.iterator();
-        while (i.hasNext()) {
-            str += i.next().toString();
+        for (StanzaChild child : childs) {
+            str += child.toString();
         }
         if (type.equals(Type.error)) {
             str += "<error type='cancel'><service-unavailable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas' /></error>";

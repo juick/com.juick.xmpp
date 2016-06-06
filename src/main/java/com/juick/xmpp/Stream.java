@@ -18,18 +18,16 @@
 package com.juick.xmpp;
 
 import com.juick.xmpp.utils.XmlUtils;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import org.xmlpull.mxp1.MXParser;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.*;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -39,21 +37,21 @@ public abstract class Stream {
 
     public interface StreamListener {
 
-        public void onStreamReady();
+        void onStreamReady();
 
-        public void onStreamFail(final Exception ex);
+        void onStreamFail(final Exception ex);
     }
     public JID from;
     public JID to;
     protected InputStream is;
     protected XmlPullParser parser;
     protected OutputStreamWriter writer;
-    HashMap<String, StanzaChild> childParsers = new HashMap<String, StanzaChild>();
-    ArrayList<StreamListener> listenersStream = new ArrayList<StreamListener>();
-    ArrayList<Message.MessageListener> listenersMessage = new ArrayList<Message.MessageListener>();
-    ArrayList<Presence.PresenceListener> listenersPresence = new ArrayList<Presence.PresenceListener>();
-    ArrayList<Iq.IqListener> listenersIq = new ArrayList<Iq.IqListener>();
-    HashMap<String, Iq.IqListener> listenersIqId = new HashMap<String, Iq.IqListener>();
+    Map<String, StanzaChild> childParsers = new HashMap<>();
+    List<StreamListener> listenersStream = new ArrayList<>();
+    List<Message.MessageListener> listenersMessage = new ArrayList<>();
+    List<Presence.PresenceListener> listenersPresence = new ArrayList<>();
+    List<Iq.IqListener> listenersIq = new ArrayList<>();
+    HashMap<String, Iq.IqListener> listenersIqId = new HashMap<>();
     boolean loggedIn;
 
     public Stream(final JID from, final JID to, final InputStream is, final OutputStream os) {
@@ -160,34 +158,39 @@ public abstract class Stream {
     private void parse() throws XmlPullParserException, IOException, ParseException {
         while (parser.next() == XmlPullParser.START_TAG) {
             final String tag = parser.getName();
-            if (tag.equals("message")) {
-                Message msg = Message.parse(parser, childParsers);
-                for (Iterator<Message.MessageListener> it = listenersMessage.iterator(); it.hasNext();) {
-                    it.next().onMessage(msg);
-                }
-            } else if (tag.equals("presence")) {
-                Presence p = Presence.parse(parser, childParsers);
-                for (Iterator<Presence.PresenceListener> it = listenersPresence.iterator(); it.hasNext();) {
-                    it.next().onPresence(p);
-                }
-            } else if (tag.equals("iq")) {
-                Iq iq = Iq.parse(parser, childParsers);
-                final String key = (iq.from == null) ? "" : iq.from.toString() + "\n" + iq.id;
-                boolean parsed = false;
-                if (listenersIqId.containsKey(key)) {
-                    Iq.IqListener l = (Iq.IqListener) listenersIqId.get(key);
-                    parsed |= l.onIq(iq);
-                    listenersIqId.remove(key);
-                } else {
-                    for (Iterator<Iq.IqListener> it = listenersIq.iterator(); it.hasNext();) {
-                        parsed |= it.next().onIq(iq);
+            switch (tag) {
+                case "message":
+                    Message msg = Message.parse(parser, childParsers);
+                    for (Message.MessageListener listener : listenersMessage) {
+                        listener.onMessage(msg);
                     }
-                }
-                if (!parsed) {
-                    send(iq.error());
-                }
-            } else {
-                XmlUtils.skip(parser);
+                    break;
+                case "presence":
+                    Presence p = Presence.parse(parser, childParsers);
+                    for (Presence.PresenceListener listener : listenersPresence) {
+                        listener.onPresence(p);
+                    }
+                    break;
+                case "iq":
+                    Iq iq = Iq.parse(parser, childParsers);
+                    final String key = (iq.from == null) ? "" : iq.from.toString() + "\n" + iq.id;
+                    boolean parsed = false;
+                    if (listenersIqId.containsKey(key)) {
+                        Iq.IqListener l = listenersIqId.get(key);
+                        parsed = l.onIq(iq);
+                        listenersIqId.remove(key);
+                    } else {
+                        for (Iq.IqListener listener : listenersIq) {
+                            parsed |= listener.onIq(iq);
+                        }
+                    }
+                    if (!parsed) {
+                        send(iq.error());
+                    }
+                    break;
+                default:
+                    XmlUtils.skip(parser);
+                    break;
             }
         }
         XmlUtils.skip(parser);
@@ -206,8 +209,8 @@ public abstract class Stream {
             }
         }
 
-        for (Iterator<StreamListener> it = listenersStream.iterator(); it.hasNext();) {
-            it.next().onStreamFail(ex);
+        for (StreamListener listener : listenersStream) {
+            listener.onStreamFail(ex);
         }
     }
 }
