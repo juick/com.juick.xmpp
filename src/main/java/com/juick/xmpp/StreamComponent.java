@@ -17,11 +17,11 @@
  */
 package com.juick.xmpp;
 
-import com.juick.xmpp.utils.SHA1;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Iterator;
+
+import org.apache.commons.codec.digest.DigestUtils;
 import org.xmlpull.v1.XmlPullParserException;
 
 /**
@@ -39,36 +39,31 @@ public class StreamComponent extends Stream {
 
     @Override
     public void openStream() throws XmlPullParserException, IOException {
-        String msg = "<stream:stream xmlns='jabber:component:accept' xmlns:stream='http://etherx.jabber.org/streams' to='" + to.toString() + "'>";
-        writer.write(msg);
-        writer.flush();
+        send("<stream:stream xmlns='jabber:component:accept' xmlns:stream='http://etherx.jabber.org/streams' to='" +
+                to.toString() + "'>");
 
         parser.next(); // stream:stream
         String sid = parser.getAttributeValue(null, "id");
         String sfrom = parser.getAttributeValue(null, "from");
         if (sfrom == null || !sfrom.equals(to.toString())) {
             loggedIn = false;
-            for (Iterator<StreamListener> it = listenersStream.iterator(); it.hasNext();) {
-                it.next().onStreamFail(new IOException("stream:stream, failed authentication"));
+            for (StreamListener listener : listenersStream) {
+                listener.onStreamFail(new IOException("stream:stream, failed authentication"));
             }
             return;
         }
 
-        msg = "<handshake>" + SHA1.encode(sid + password) + "</handshake>";
-        writer.write(msg);
-        writer.flush();
+        send("<handshake>" + DigestUtils.sha1Hex(sid + password) + "</handshake>");
 
         parser.next();
         if (parser.getName().equals("handshake")) {
             parser.next();
             loggedIn = true;
-            for (Iterator<StreamListener> it = listenersStream.iterator(); it.hasNext();) {
-                it.next().onStreamReady();
-            }
+            listenersStream.forEach(StreamListener::onStreamReady);
         } else {
             loggedIn = false;
-            for (Iterator<StreamListener> it = listenersStream.iterator(); it.hasNext();) {
-                it.next().onStreamFail(new IOException(String.format("%s, failed authentication", parser.getName())));
+            for (StreamListener listener : listenersStream) {
+                listener.onStreamFail(new IOException(String.format("%s, failed authentication", parser.getName())));
             }
         }
     }

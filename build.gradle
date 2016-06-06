@@ -6,6 +6,7 @@ repositories {
 
 dependencies {
 	compile 'xpp3:xpp3_min:1.1.4c'
+	compile 'commons-codec:commons-codec:1.10'
 }
 
 compileJava.options.encoding = 'UTF-8'
