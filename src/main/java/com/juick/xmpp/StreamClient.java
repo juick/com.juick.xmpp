@@ -51,7 +51,7 @@ public class StreamClient extends Stream implements Iq.IqListener {
 
         StreamFeatures features = StreamFeatures.parse(parser);
         if (features.STARTTLS == StreamFeatures.REQUIRED || features.PLAIN == StreamFeatures.NOTAVAILABLE) {
-            loggedIn = false;
+            setLoggedIn(false);
             for (Iterator<StreamListener> it = listenersStream.iterator(); it.hasNext();) {
                 it.next().onStreamFail(new IOException("stream:features, failed authentication"));
             }
@@ -68,9 +68,9 @@ public class StreamClient extends Stream implements Iq.IqListener {
             do {
                 parser.next();
             } while (!(parser.getEventType() == XmlPullParser.END_TAG && parser.getName().equals("success")));
-            loggedIn = true;
+            setLoggedIn(true);
         } else {
-            loggedIn = false;
+            setLoggedIn(false);
             for (StreamListener listener : listenersStream) {
                 listener.onStreamFail(new IOException(String.format("%s, failed authentication", parser.getName())));
             }

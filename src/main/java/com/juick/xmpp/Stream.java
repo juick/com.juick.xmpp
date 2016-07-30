@@ -35,6 +35,14 @@ import java.util.Map;
  */
 public abstract class Stream {
 
+    public boolean isLoggedIn() {
+        return loggedIn;
+    }
+
+    public void setLoggedIn(boolean loggedIn) {
+        this.loggedIn = loggedIn;
+    }
+
     public interface StreamListener {
 
         void onStreamReady();
@@ -52,7 +60,7 @@ public abstract class Stream {
     List<Presence.PresenceListener> listenersPresence = new ArrayList<>();
     List<Iq.IqListener> listenersIq = new ArrayList<>();
     HashMap<String, Iq.IqListener> listenersIqId = new HashMap<>();
-    boolean loggedIn;
+    private boolean loggedIn;
 
     public Stream(final JID from, final JID to, final InputStream is, final OutputStream os) {
         this.from = from;
@@ -132,7 +140,7 @@ public abstract class Stream {
     public abstract void openStream() throws XmlPullParserException, IOException;
 
     public void logoff() {
-        loggedIn = false;
+        setLoggedIn(false);
         try {
             writer.flush();
             writer.close();
@@ -201,7 +209,7 @@ public abstract class Stream {
      * It tries to close the XML-Reader and XML-Writer one last time.
      */
     protected void connectionFailed(final Exception ex) {
-        if (loggedIn) {
+        if (isLoggedIn()) {
             try {
                 writer.close();
                 //TODO close parser

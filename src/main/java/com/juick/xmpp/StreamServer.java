@@ -49,7 +49,7 @@ public class StreamServer extends Stream {
         String sid = parser.getAttributeValue(null, "id");
         String sfrom = parser.getAttributeValue(null, "from");
         if (sfrom == null || !sfrom.equals(to.toString())) {
-            loggedIn = false;
+            setLoggedIn(false);
             for (Iterator<StreamListener> it = listenersStream.iterator(); it.hasNext();) {
                 it.next().onStreamFail(new IOException("stream:stream, failed authentication"));
             }
