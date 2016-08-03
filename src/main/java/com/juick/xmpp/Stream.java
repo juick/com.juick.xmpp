@@ -43,6 +43,14 @@ public abstract class Stream {
         this.loggedIn = loggedIn;
     }
 
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public void setConnected(boolean connected) {
+        this.connected = connected;
+    }
+
     public interface StreamListener {
 
         void onStreamReady();
@@ -61,12 +69,14 @@ public abstract class Stream {
     List<Iq.IqListener> listenersIq = new ArrayList<>();
     HashMap<String, Iq.IqListener> listenersIqId = new HashMap<>();
     private boolean loggedIn;
+    private boolean connected;
 
     public Stream(final JID from, final JID to, final InputStream is, final OutputStream os) {
         this.from = from;
         this.to = to;
         this.is = is;
         writer = new OutputStreamWriter(os);
+        setConnected(true);
     }
 
     public void restartParser() throws XmlPullParserException, IOException {
@@ -144,7 +154,7 @@ public abstract class Stream {
         try {
             writer.flush();
             writer.close();
-            //TODO close parser
+            setConnected(false);
         } catch (final Exception e) {
             connectionFailed(e);
         }
@@ -164,7 +174,7 @@ public abstract class Stream {
     }
 
     private void parse() throws XmlPullParserException, IOException, ParseException {
-        while (parser.next() == XmlPullParser.START_TAG) {
+        while (parser.next() == XmlPullParser.START_TAG || isConnected()) {
             final String tag = parser.getName();
             switch (tag) {
                 case "message":
@@ -201,7 +211,9 @@ public abstract class Stream {
                     break;
             }
         }
-        XmlUtils.skip(parser);
+        if (isConnected()) {
+            XmlUtils.skip(parser);
+        }
     }
 
     /**
@@ -212,7 +224,7 @@ public abstract class Stream {
         if (isLoggedIn()) {
             try {
                 writer.close();
-                //TODO close parser
+                setConnected(false);
             } catch (Exception e) {
             }
         }
