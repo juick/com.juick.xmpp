@@ -2,6 +2,7 @@ package com.juick.xmpp.tests;
 
 import com.juick.xmpp.Message;
 import com.juick.xmpp.extensions.ChatState;
+import com.juick.xmpp.extensions.ReceiptsRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -32,11 +33,13 @@ public class ExtensionsTests {
         TestStream dummyStream = new TestStream(
                 "<stream xmlns='jabber:client'><message to='vasya@localhost'>" +
                         "<active xmlns='http://jabber.org/protocol/chatstates'/>" +
+                        "<request xmlns='urn:xmpp:receipts'/>" +
                         "</message>" +
                         "<message to='vasya@localhost'>" +
                         "<passive xmlns='http://jabber.org/protocol/chatstates'/>" +
                         "</message>");
         dummyStream.addChildParser(new ChatState());
+        dummyStream.addChildParser(new ReceiptsRequest());
         dummyStream.addListener(testListener);
         dummyStream.startParsing();
         messageCaptor = ArgumentCaptor.forClass(Message.class);
@@ -46,5 +49,9 @@ public class ExtensionsTests {
         assertEquals("active chatstate", ChatState.State.active, chatState.getValue());
         ChatState errorState = (ChatState) msgs.get(1).getChild("http://jabber.org/protocol/chatstates");
         assertEquals("undefined chatstate should be considered active", ChatState.State.active, errorState.getValue());
+        ReceiptsRequest receiptsRequest = (ReceiptsRequest) msgs.get(0).getChild(ReceiptsRequest.XMLNS);
+        assertEquals("message have receipt request", true, receiptsRequest != null);
+        ReceiptsRequest noReceiptsRequest = (ReceiptsRequest) msgs.get(1).getChild(ReceiptsRequest.XMLNS);
+        assertEquals("message have no receipt request", true, noReceiptsRequest == null);
     }
 }
