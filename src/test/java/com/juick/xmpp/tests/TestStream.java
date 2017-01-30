@@ -29,7 +29,7 @@ public class TestStream extends Stream {
     }
 
     @Override
-    public void openStream() throws XmlPullParserException, IOException {
+    public void handshake() throws XmlPullParserException, IOException {
         restartParser();
         parser.next();
     }

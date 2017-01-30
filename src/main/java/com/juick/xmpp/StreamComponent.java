@@ -17,12 +17,12 @@
  */
 package com.juick.xmpp;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.xmlpull.v1.XmlPullParserException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import org.apache.commons.codec.digest.DigestUtils;
-import org.xmlpull.v1.XmlPullParserException;
 
 /**
  *
@@ -38,7 +38,7 @@ public class StreamComponent extends Stream {
     }
 
     @Override
-    public void openStream() throws XmlPullParserException, IOException {
+    public void handshake() throws XmlPullParserException, IOException {
         send("<stream:stream xmlns='jabber:component:accept' xmlns:stream='http://etherx.jabber.org/streams' to='" +
                 to.toString() + "'>");
 

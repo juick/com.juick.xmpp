@@ -35,6 +35,8 @@ import java.util.Map;
  */
 public abstract class Stream {
 
+    public static final String NS_STREAM = "http://etherx.jabber.org/streams";
+
     public boolean isLoggedIn() {
         return loggedIn;
     }
@@ -78,7 +80,7 @@ public abstract class Stream {
     public void startParsing() {
         try {
             restartParser();
-            openStream();
+            handshake();
             parse();
         } catch (final Exception e) {
             connectionFailed(e);
@@ -137,7 +139,7 @@ public abstract class Stream {
         return listenersIq.remove(l);
     }
 
-    public abstract void openStream() throws XmlPullParserException, IOException;
+    public abstract void handshake() throws XmlPullParserException, IOException;
 
     public void logoff() {
         setLoggedIn(false);

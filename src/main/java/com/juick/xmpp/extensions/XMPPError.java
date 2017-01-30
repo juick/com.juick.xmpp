@@ -19,15 +19,16 @@ package com.juick.xmpp.extensions;
 
 import com.juick.xmpp.StanzaChild;
 import com.juick.xmpp.utils.XmlUtils;
-import java.io.IOException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 
 /**
  *
  * @author ugnich
  */
-public class Error implements StanzaChild {
+public class XMPPError implements StanzaChild {
 
     public static final class Type {
 
@@ -44,10 +45,10 @@ public class Error implements StanzaChild {
     public String condition = null;
     public String text = null;
 
-    public Error() {
+    public XMPPError() {
     }
 
-    public Error(String type, String condition) {
+    public XMPPError(String type, String condition) {
         this.type = type;
         this.condition = condition;
     }
@@ -58,8 +59,8 @@ public class Error implements StanzaChild {
     }
 
     @Override
-    public Error parse(XmlPullParser parser) throws XmlPullParserException, IOException {
-        Error err = new Error();
+    public XMPPError parse(XmlPullParser parser) throws XmlPullParserException, IOException {
+        XMPPError err = new XMPPError();
         err.by = parser.getAttributeValue(null, "by");
         err.type = parser.getAttributeValue(null, "type");
 

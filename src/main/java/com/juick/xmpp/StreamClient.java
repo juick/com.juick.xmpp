@@ -19,14 +19,14 @@ package com.juick.xmpp;
 
 import com.juick.xmpp.extensions.ResourceBinding;
 import com.juick.xmpp.extensions.StreamFeatures;
+import org.apache.commons.codec.binary.Base64;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
-
-import org.apache.commons.codec.binary.Base64;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
 
 /**
  *
@@ -43,7 +43,7 @@ public class StreamClient extends Stream implements Iq.IqListener {
     }
 
     @Override
-    public void openStream() throws XmlPullParserException, IOException {
+    public void handshake() throws XmlPullParserException, IOException {
         String msg = "<stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' to='" + to.Host + "' version='1.0'>";
         writer.write(msg);
         writer.flush();
