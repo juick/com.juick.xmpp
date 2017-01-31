@@ -68,7 +68,7 @@ public class ComponentTests {
         component.addListener(messageListener);
         executorService.submit(component::startParsing);
 
-        verify(testListener, timeout(5000).times(1)).onStreamReady();
+        verify(testListener, timeout(10000).times(1)).onStreamReady();
 
         Message msg = new Message();
         msg.from = new JID("vasya@localhost");
