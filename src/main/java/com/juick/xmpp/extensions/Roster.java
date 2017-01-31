@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+import rocks.xmpp.addr.Jid;
 
 /**
  * http://xmpp.org/rfcs/rfc3921.html#roster
@@ -48,9 +49,9 @@ public class Roster implements StanzaChild {
             final String tag = parser.getName();
             if (tag.equals("item")) {
                 Item ri = new Item();
-                final String strJID = parser.getAttributeValue(null, "jid");
-                if (strJID != null) {
-                    ri.jid = new JID(strJID);
+                final String strJid = parser.getAttributeValue(null, "Jid");
+                if (strJid != null) {
+                    ri.jid = Jid.of(strJid);
                 }
                 ri.name = parser.getAttributeValue(null, "name");
                 ri.subscription = parser.getAttributeValue(null, "subscription");
@@ -81,7 +82,7 @@ public class Roster implements StanzaChild {
 
     public static class Item {
 
-        public JID jid = null;
+        public Jid jid = null;
         public String name = null;
         public String subscription = null;
         public String group = null;
@@ -90,8 +91,7 @@ public class Roster implements StanzaChild {
         public String toString() {
             String str = "<item";
             if (jid != null) {
-                //TODO нужен escape?
-                str += " jid='" + jid.toString() + "'";
+                str += " jid='" + jid.toEscapedString() + "'";
             }
             if (name != null) {
                 str += " name='" + XmlUtils.escape(name) + "'";

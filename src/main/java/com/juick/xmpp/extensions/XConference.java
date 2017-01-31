@@ -22,6 +22,7 @@ import com.juick.xmpp.*;
 import java.io.IOException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+import rocks.xmpp.addr.Jid;
 
 /**
  *
@@ -31,7 +32,7 @@ public class XConference implements StanzaChild {
 
     public final static String XMLNS = "jabber:x:conference";
     public final static String TagName = "x";
-    public String jid;
+    public Jid jid;
     public String reason;
 
     @Override
@@ -42,7 +43,7 @@ public class XConference implements StanzaChild {
     @Override
     public XConference parse(XmlPullParser parser) throws XmlPullParserException, IOException {
         XConference xc = new XConference();
-        xc.jid = parser.getAttributeValue(null, "jid");
+        xc.jid = Jid.of(parser.getAttributeValue(null, "Jid"));
         xc.reason = parser.getAttributeValue(null, "reason");
         XmlUtils.skip(parser);
         return xc;
@@ -52,7 +53,7 @@ public class XConference implements StanzaChild {
     public String toString() {
         String str = "<" + TagName + " xmlns='" + XMLNS + "'";
         if (jid != null) {
-            str += " jid=\"" + XmlUtils.escape(jid) + "\"";
+            str += " jid=\"" + jid.toEscapedString() + "\"";
         }
         if (reason != null) {
             str += " reason=\"" + XmlUtils.escape(reason) + "\"";

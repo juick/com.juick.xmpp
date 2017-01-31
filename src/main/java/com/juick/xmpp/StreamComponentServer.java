@@ -4,6 +4,7 @@ import com.juick.xmpp.extensions.Handshake;
 import com.juick.xmpp.extensions.XMPPError;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.xmlpull.v1.XmlPullParserException;
+import rocks.xmpp.addr.Jid;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,7 +21,7 @@ public class StreamComponentServer extends Stream {
     private String streamId, secret;
 
 
-    public StreamComponentServer(JID from, JID to, InputStream is, OutputStream os, String password) {
+    public StreamComponentServer(Jid from, Jid to, InputStream is, OutputStream os, String password) {
         super(from, to, is, os);
         secret = password;
         streamId = UUID.randomUUID().toString();
@@ -37,7 +38,7 @@ public class StreamComponentServer extends Stream {
             throw new IOException("invalid domain");
         }
         send(String.format("<stream:stream xmlns:stream='%s' " +
-                "xmlns='%s' from='%s' id='%s'>", NS_STREAM, NS_COMPONENT_ACCEPT, from.Bare(), streamId));
+                "xmlns='%s' from='%s' id='%s'>", NS_STREAM, NS_COMPONENT_ACCEPT, from.asBareJid().toEscapedString(), streamId));
         Handshake handshake = Handshake.parse(parser);
         boolean authenticated = handshake.getValue().equals(DigestUtils.sha1Hex(streamId + secret));
         setLoggedIn(authenticated);

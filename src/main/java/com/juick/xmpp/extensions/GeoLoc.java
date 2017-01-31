@@ -49,24 +49,32 @@ public class GeoLoc implements StanzaChild {
 
         while (parser.next() == XmlPullParser.START_TAG) {
             final String tag = parser.getName();
-            if (tag.equals("description")) {
-                geoloc.Description = XmlUtils.getTagText(parser);
-            } else if (tag.equals("text")) {
-                geoloc.Text = XmlUtils.getTagText(parser);
-            } else if (tag.equals("lat")) {
-                geoloc.Lat = XmlUtils.getTagText(parser);
-            } else if (tag.equals("lon")) {
-                geoloc.Lon = XmlUtils.getTagText(parser);
-            } else if (tag.equals("accuracy")) {
-                final String accuracyStr = XmlUtils.getTagText(parser);
-                geoloc.Accuracy = Integer.parseInt(accuracyStr);
-            } else if (tag.equals("uri")) {
-                final String uri = XmlUtils.getTagText(parser);
-                if (uri.startsWith("http://juick.com/places/")) {
-                    geoloc.JuickPlaceID = Integer.parseInt(uri.substring(24));
-                }
-            } else {
-                XmlUtils.skip(parser);
+            switch (tag) {
+                case "description":
+                    geoloc.Description = XmlUtils.getTagText(parser);
+                    break;
+                case "text":
+                    geoloc.Text = XmlUtils.getTagText(parser);
+                    break;
+                case "lat":
+                    geoloc.Lat = XmlUtils.getTagText(parser);
+                    break;
+                case "lon":
+                    geoloc.Lon = XmlUtils.getTagText(parser);
+                    break;
+                case "accuracy":
+                    final String accuracyStr = XmlUtils.getTagText(parser);
+                    geoloc.Accuracy = Integer.parseInt(accuracyStr);
+                    break;
+                case "uri":
+                    final String uri = XmlUtils.getTagText(parser);
+                    if (uri.startsWith("http://juick.com/places/")) {
+                        geoloc.JuickPlaceID = Integer.parseInt(uri.substring(24));
+                    }
+                    break;
+                default:
+                    XmlUtils.skip(parser);
+                    break;
             }
         }
         return geoloc;

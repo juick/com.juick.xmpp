@@ -20,6 +20,7 @@ package com.juick.xmpp;
 import com.juick.xmpp.utils.XmlUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+import rocks.xmpp.addr.Jid;
 
 import java.text.ParseException;
 import java.util.Map;
@@ -47,11 +48,11 @@ public class Iq extends Stanza {
     public Iq() {
     }
 
-    public Iq(JID from, JID to) {
+    public Iq(Jid from, Jid to) {
         super(from, to);
     }
 
-    public Iq(JID from, JID to, String type) {
+    public Iq(Jid from, Jid to, String type) {
         super(from, to, type);
     }
 

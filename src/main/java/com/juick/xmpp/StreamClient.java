@@ -22,6 +22,7 @@ import com.juick.xmpp.extensions.StreamFeatures;
 import org.apache.commons.codec.binary.Base64;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+import rocks.xmpp.addr.Jid;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,14 +38,14 @@ public class StreamClient extends Stream implements Iq.IqListener {
     public final static String XMLNS = "urn:ietf:params:xml:ns:xmpp-session";
     String password;
 
-    public StreamClient(JID from, JID to, InputStream is, OutputStream os, String password) {
+    public StreamClient(Jid from, Jid to, InputStream is, OutputStream os, String password) {
         super(from, to, is, os);
         this.password = password;
     }
 
     @Override
     public void handshake() throws XmlPullParserException, IOException {
-        String msg = "<stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' to='" + to.Host + "' version='1.0'>";
+        String msg = "<stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' to='" + to.getDomain() + "' version='1.0'>";
         writer.write(msg);
         writer.flush();
         parser.next(); // stream:stream
@@ -59,7 +60,7 @@ public class StreamClient extends Stream implements Iq.IqListener {
         }
 
         msg = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>";
-        byte[] auth_msg = (from.Bare() + '\0' + from.Username + '\0' + password).getBytes();
+        byte[] auth_msg = (from.asBareJid().toEscapedString() + '\0' + from.getLocal() + '\0' + password).getBytes();
         msg = msg + Base64.encodeBase64String(auth_msg) + "</auth>";
         writer.write(msg);
         writer.flush();
@@ -77,7 +78,7 @@ public class StreamClient extends Stream implements Iq.IqListener {
             return;
         }
 
-        send("<stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' to='" + to.Host +
+        send("<stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' to='" + to.getDomain() +
                 "' version='1.0'>");
         restartParser();
         do {
@@ -88,10 +89,10 @@ public class StreamClient extends Stream implements Iq.IqListener {
         bind.type = Iq.Type.set;
         ResourceBinding rb = new ResourceBinding();
         addChildParser(new ResourceBinding());
-        addListener(to.Host, bind.id, this);
+        addListener(to.getDomain(), bind.id, this);
 
-        if (from.Resource != null && from.Resource.length() > 0) {
-            rb.resource = from.Resource;
+        if (from.getResource() != null && from.getResource().length() > 0) {
+            rb.resource = from.getResource();
         }
         bind.addChild(rb);
         writer.write(bind.toString());
@@ -113,7 +114,7 @@ public class StreamClient extends Stream implements Iq.IqListener {
         if (xmlns.equals(ResourceBinding.XMLNS)) {
             ResourceBinding rb = (ResourceBinding) iq.childs.get(0);
             if (rb.jid != null) {
-                from.Resource = rb.jid.Resource;
+                from = from.withResource(rb.jid.getResource());
             }
             listenersStream.forEach(StreamListener::onStreamReady);
             session();

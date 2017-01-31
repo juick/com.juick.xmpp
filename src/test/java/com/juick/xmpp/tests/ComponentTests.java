@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import rocks.xmpp.addr.Jid;
 
 import java.io.IOException;
 import java.io.PipedInputStream;
@@ -39,18 +40,8 @@ public class ComponentTests {
 
     @Test
     public void componentTest() throws IOException, InterruptedException {
+
         ServerSocket serverSocket = mock(ServerSocket.class);
-        final StreamComponentServer[] componentServer = new StreamComponentServer[1];
-        executorService.submit(() -> {
-            try {
-                Socket client = serverSocket.accept();
-                componentServer[0] = new StreamComponentServer(
-                        new JID("localhost"), new JID("localhost"), client.getInputStream(), client.getOutputStream(), "secret");
-                componentServer[0].startParsing();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
         Socket client = mock(Socket.class);
         Socket server = mock(Socket.class);
         when(serverSocket.accept()).thenReturn(server);
@@ -63,16 +54,29 @@ public class ComponentTests {
         when(client.getOutputStream()).thenReturn(clientOutputStream);
         when(server.getInputStream()).thenReturn(serverInputStream);
         when(server.getOutputStream()).thenReturn(serverOutputStream);
-        StreamComponent component = new StreamComponent(new JID("localhost"), client.getInputStream(), client.getOutputStream(), "secret");
+
+        final StreamComponentServer[] componentServer = new StreamComponentServer[1];
+        executorService.submit(() -> {
+            try {
+                Socket clientSocket = serverSocket.accept();
+                componentServer[0] = new StreamComponentServer(
+                        Jid.of("localhost"), Jid.of("localhost"), clientSocket.getInputStream(), clientSocket.getOutputStream(), "secret");
+                componentServer[0].startParsing();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        StreamComponent component = new StreamComponent(Jid.of("localhost"), client.getInputStream(), client.getOutputStream(), "secret");
         component.addListener(testListener);
         component.addListener(messageListener);
         executorService.submit(component::startParsing);
 
-        verify(testListener, timeout(10000).times(1)).onStreamReady();
+        verify(testListener, timeout(5000).times(1)).onStreamReady();
 
         Message msg = new Message();
-        msg.from = new JID("vasya@localhost");
-        msg.to = new JID("masha@localhost");
+        msg.from = Jid.of("vasya@localhost");
+        msg.to = Jid.of("masha@localhost");
         msg.body = "test";
         componentServer[0].send(msg);
 

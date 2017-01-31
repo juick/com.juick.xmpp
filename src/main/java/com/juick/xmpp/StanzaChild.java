@@ -29,10 +29,10 @@ import org.xmlpull.v1.XmlPullParserException;
  */
 public interface StanzaChild {
 
-    public String getXMLNS();
+    String getXMLNS();
 
-    public StanzaChild parse(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException;
+    StanzaChild parse(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException;
 
     @Override
-    public String toString();
+    String toString();
 }

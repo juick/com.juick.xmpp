@@ -20,6 +20,7 @@ package com.juick.xmpp;
 import com.juick.xmpp.utils.XmlUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+import rocks.xmpp.addr.Jid;
 
 import java.text.ParseException;
 import java.util.Map;
@@ -61,15 +62,15 @@ public class Presence extends Stanza {
     public Presence() {
     }
 
-    public Presence(JID to) {
+    public Presence(Jid to) {
         super(to);
     }
 
-    public Presence(JID from, JID to) {
+    public Presence(Jid from, Jid to) {
         super(from, to);
     }
 
-    public Presence(JID from, JID to, String type) {
+    public Presence(Jid from, Jid to, String type) {
         super(from, to, type);
     }
 

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+import rocks.xmpp.addr.Jid;
 
 /**
  *
@@ -40,7 +41,7 @@ public class DiscoItems implements StanzaChild {
         return XMLNS;
     }
 
-    public void addItem(final JID jid, final String name) {
+    public void addItem(final Jid jid, final String name) {
         Item i = new Item();
         i.jid = jid;
         i.name = name;
@@ -55,9 +56,9 @@ public class DiscoItems implements StanzaChild {
             final String tag = parser.getName();
             if (tag.equals("item")) {
                 Item i = new Item();
-                final String strJID = parser.getAttributeValue(null, "jid");
-                if (strJID != null) {
-                    i.jid = new JID(strJID);
+                final String strJid = parser.getAttributeValue(null, "Jid");
+                if (strJid != null) {
+                    i.jid = Jid.of(strJid);
                 }
                 i.name = parser.getAttributeValue(null, "name");
                 di.items.add(i);
@@ -80,15 +81,14 @@ public class DiscoItems implements StanzaChild {
 
     public static class Item {
 
-        public JID jid = null;
+        public Jid jid = null;
         public String name = null;
 
         @Override
         public String toString() {
             String str = "<item";
             if (jid != null) {
-                //TODO нужен escape?
-                str += " jid='" + jid.toString() + "'";
+                str += " jid='" + jid.toEscapedString() + "'";
             }
             if (name != null) {
                 str += " name='" + XmlUtils.escape(name) + "'";

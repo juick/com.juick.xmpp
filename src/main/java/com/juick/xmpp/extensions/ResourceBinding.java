@@ -22,6 +22,7 @@ import com.juick.xmpp.*;
 import java.io.IOException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+import rocks.xmpp.addr.Jid;
 
 /**
  * http://xmpp.org/rfcs/rfc3920.html#bind
@@ -32,7 +33,7 @@ public class ResourceBinding implements StanzaChild {
     public final static String XMLNS = "urn:ietf:params:xml:ns:xmpp-bind";
     public final static String TagName = "bind";
     public String resource;
-    public JID jid;
+    public Jid jid;
 
     @Override
     public String getXMLNS() {
@@ -47,8 +48,8 @@ public class ResourceBinding implements StanzaChild {
             final String tag = parser.getName();
             if (tag.equals("resource")) {
                 rb.resource = XmlUtils.getTagText(parser);
-            } else if (tag.equals("jid")) {
-                rb.jid = new JID(XmlUtils.getTagText(parser));
+            } else if (tag.equals("Jid")) {
+                rb.jid = Jid.of(XmlUtils.getTagText(parser));
             } else {
                 XmlUtils.skip(parser);
             }
@@ -63,7 +64,7 @@ public class ResourceBinding implements StanzaChild {
             str += "<resource>" + XmlUtils.escape(resource) + "</lat>";
         }
         if (jid != null) {
-            str += "<jid>" + jid.toString() + "</jid>";
+            str += "<Jid>" + jid.toEscapedString() + "</Jid>";
         }
         str += "</" + TagName + ">";
         return str;

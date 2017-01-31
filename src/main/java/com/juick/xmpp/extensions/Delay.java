@@ -22,6 +22,7 @@ import com.juick.xmpp.*;
 import java.io.IOException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+import rocks.xmpp.addr.Jid;
 
 /**
  *
@@ -31,7 +32,7 @@ public class Delay implements StanzaChild {
 
     public final static String XMLNS = "urn:xmpp:delay";
     public final static String TagName = "delay";
-    public JID from = null;
+    public Jid from = null;
     public String stamp = null;
     public String description = null;
 
@@ -46,7 +47,7 @@ public class Delay implements StanzaChild {
 
         String from = parser.getAttributeValue(null, "from");
         if (from != null) {
-            delay.from = new JID(from);
+            delay.from = Jid.of(from);
         }
         delay.stamp = parser.getAttributeValue(null, "stamp");
         delay.description = XmlUtils.getTagText(parser);
@@ -58,7 +59,7 @@ public class Delay implements StanzaChild {
     public String toString() {
         String str = "<" + TagName + " xmlns='" + XMLNS + "'";
         if (from != null) {
-            str += " from='" + from.toString() + "'";
+            str += " from='" + from.toEscapedString() + "'";
         }
         if (stamp != null) {
             str += " stamp='" + stamp + "'";

@@ -59,16 +59,20 @@ public class DiscoInfo implements StanzaChild {
 
         while (parser.next() == XmlPullParser.START_TAG) {
             final String tag = parser.getName();
-            if (tag.equals("identity")) {
-                Identity i = new Identity();
-                i.category = parser.getAttributeValue(null, "category");
-                i.type = parser.getAttributeValue(null, "type");
-                i.name = parser.getAttributeValue(null, "name");
-                di.identities.add(i);
-            } else if (tag.equals("feature")) {
-                di.features.add(parser.getAttributeValue(null, "var"));
-            } else {
-                XmlUtils.skip(parser);
+            switch (tag) {
+                case "identity":
+                    Identity i = new Identity();
+                    i.category = parser.getAttributeValue(null, "category");
+                    i.type = parser.getAttributeValue(null, "type");
+                    i.name = parser.getAttributeValue(null, "name");
+                    di.identities.add(i);
+                    break;
+                case "feature":
+                    di.features.add(parser.getAttributeValue(null, "var"));
+                    break;
+                default:
+                    XmlUtils.skip(parser);
+                    break;
             }
         }
         return di;
@@ -77,11 +81,11 @@ public class DiscoInfo implements StanzaChild {
     @Override
     public String toString() {
         String str = "<" + TagName + " xmlns='" + XMLNS + "'>";
-        for (Iterator<Identity> i = identities.iterator(); i.hasNext();) {
-            str += i.next().toString();
+        for (Identity identity : identities) {
+            str += identity.toString();
         }
-        for (Iterator<String> i = features.iterator(); i.hasNext();) {
-            str += "<feature var='" + i.next() + "'/>";
+        for (String feature : features) {
+            str += "<feature var='" + feature + "'/>";
         }
         str += "</" + TagName + ">";
         return str;

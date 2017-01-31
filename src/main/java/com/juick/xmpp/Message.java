@@ -20,6 +20,7 @@ package com.juick.xmpp;
 import com.juick.xmpp.utils.XmlUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+import rocks.xmpp.addr.Jid;
 
 import java.text.ParseException;
 import java.util.Map;
@@ -51,19 +52,19 @@ public class Message extends Stanza {
     public Message() {
     }
 
-    public Message(JID to) {
+    public Message(Jid to) {
         super(to);
     }
 
-    public Message(JID to, String type) {
+    public Message(Jid to, String type) {
         super(to, type);
     }
 
-    public Message(JID from, JID to) {
+    public Message(Jid from, Jid to) {
         super(from, to);
     }
 
-    public Message(JID from, JID to, String type) {
+    public Message(Jid from, Jid to, String type) {
         super(from, to, type);
     }
 

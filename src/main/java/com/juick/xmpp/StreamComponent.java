@@ -19,6 +19,7 @@ package com.juick.xmpp;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.xmlpull.v1.XmlPullParserException;
+import rocks.xmpp.addr.Jid;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +33,7 @@ public class StreamComponent extends Stream {
 
     String password;
 
-    public StreamComponent(JID to, InputStream is, OutputStream os, String password) {
+    public StreamComponent(Jid to, InputStream is, OutputStream os, String password) {
         super(null, to, is, os);
         this.password = password;
     }
@@ -40,7 +41,7 @@ public class StreamComponent extends Stream {
     @Override
     public void handshake() throws XmlPullParserException, IOException {
         send("<stream:stream xmlns='jabber:component:accept' xmlns:stream='http://etherx.jabber.org/streams' to='" +
-                to.toString() + "'>");
+                to.toEscapedString() + "'>");
 
         parser.next(); // stream:stream
         String sid = parser.getAttributeValue(null, "id");

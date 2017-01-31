@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+import rocks.xmpp.addr.Jid;
 
 /**
  *
@@ -48,7 +49,7 @@ public class MucUser implements StanzaChild {
         item.role = role;
     }
 
-    public void setInvite(final String from, final String reason) {
+    public void setInvite(final Jid from, final String reason) {
         invite = new Invite();
         invite.from = from;
         invite.reason = reason;
@@ -73,7 +74,7 @@ public class MucUser implements StanzaChild {
                 try {
                     int code = Integer.parseInt(codestr);
                     if (code >= 100 && code <= 999) {
-                        di.status.add(new Integer(code));
+                        di.status.add(code);
                     }
                 } catch (NumberFormatException e) {
                 }
@@ -137,14 +138,14 @@ public class MucUser implements StanzaChild {
 
     public static class Invite {
 
-        public String from = null;
+        public Jid from = null;
         public String reason = null;
 
         @Override
         public String toString() {
             String str = "<invite";
             if (from != null) {
-                str += " from='" + XmlUtils.escape(from) + "'";
+                str += " from='" + from.toEscapedString() + "'";
             }
             str += ">";
             if (reason != null) {

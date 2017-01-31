@@ -21,6 +21,7 @@ import com.juick.xmpp.utils.XmlUtils;
 import java.util.ArrayList;
 import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParser;
+import rocks.xmpp.addr.Jid;
 
 /**
  *
@@ -28,8 +29,8 @@ import org.xmlpull.v1.XmlPullParser;
  */
 public class Stanza {
 
-    public JID from = null;
-    public JID to = null;
+    public Jid from = null;
+    public Jid to = null;
     public String id = Long.toString(System.currentTimeMillis());
     public String type = null;
     public ArrayList<StanzaChild> childs = new ArrayList<StanzaChild>();
@@ -37,21 +38,21 @@ public class Stanza {
     public Stanza() {
     }
 
-    public Stanza(JID to) {
+    public Stanza(Jid to) {
         this.to = to;
     }
 
-    public Stanza(JID to, String type) {
+    public Stanza(Jid to, String type) {
         this.to = to;
         this.type = type;
     }
 
-    public Stanza(JID from, JID to) {
+    public Stanza(Jid from, Jid to) {
         this.from = from;
         this.to = to;
     }
 
-    public Stanza(JID from, JID to, String type) {
+    public Stanza(Jid from, Jid to, String type) {
         this.from = from;
         this.to = to;
         this.type = type;
@@ -79,12 +80,12 @@ public class Stanza {
     public void parseStanza(XmlPullParser parser) {
         final String fromStr = parser.getAttributeValue(null, "from");
         if (fromStr != null) {
-            from = new JID(fromStr);
+            from = Jid.of(fromStr);
         }
 
         final String toStr = parser.getAttributeValue(null, "to");
         if (toStr != null) {
-            to = new JID(toStr);
+            to = Jid.of(toStr);
         }
 
         id = parser.getAttributeValue(null, "id");
@@ -93,12 +94,12 @@ public class Stanza {
 
     @Override
     public String toString() {
-        String str = new String();
+        String str = "";
         if (from != null) {
-            str += " from='" + XmlUtils.escape(from.toString()) + "'";
+            str += " from='" + from.toEscapedString() + "'";
         }
         if (to != null) {
-            str += " to='" + XmlUtils.escape(to.toString()) + "'";
+            str += " to='" + to.toEscapedString() + "'";
         }
         if (id != null) {
             str += " id='" + XmlUtils.escape(id) + "'";

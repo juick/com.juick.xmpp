@@ -21,6 +21,7 @@ import com.juick.xmpp.utils.XmlUtils;
 import org.xmlpull.mxp1.MXParser;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+import rocks.xmpp.addr.Jid;
 
 import java.io.*;
 import java.text.ParseException;
@@ -51,8 +52,8 @@ public abstract class Stream {
 
         void onStreamFail(final Exception ex);
     }
-    public JID from;
-    public JID to;
+    public Jid from;
+    public Jid to;
     protected InputStream is;
     protected XmlPullParser parser;
     protected OutputStreamWriter writer;
@@ -64,7 +65,7 @@ public abstract class Stream {
     HashMap<String, Iq.IqListener> listenersIqId = new HashMap<>();
     private boolean loggedIn;
 
-    public Stream(final JID from, final JID to, final InputStream is, final OutputStream os) {
+    public Stream(final Jid from, final Jid to, final InputStream is, final OutputStream os) {
         this.from = from;
         this.to = to;
         this.is = is;
@@ -119,8 +120,8 @@ public abstract class Stream {
         }
     }
 
-    public void addListener(final String jid, final String id, final Iq.IqListener iql) {
-        listenersIqId.put(jid + "\n" + id, iql);
+    public void addListener(final String Jid, final String id, final Iq.IqListener iql) {
+        listenersIqId.put(Jid + "\n" + id, iql);
     }
 
     public boolean removeListener(final StreamListener l) {
@@ -183,7 +184,7 @@ public abstract class Stream {
                     break;
                 case "iq":
                     Iq iq = Iq.parse(parser, childParsers);
-                    final String key = (iq.from == null) ? "" : iq.from.toString() + "\n" + iq.id;
+                    final String key = (iq.from == null) ? "" : iq.from.toEscapedString() + "\n" + iq.id;
                     boolean parsed = false;
                     if (listenersIqId.containsKey(key)) {
                         Iq.IqListener l = listenersIqId.get(key);
