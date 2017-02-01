@@ -46,12 +46,6 @@ public abstract class Stream {
         this.loggedIn = loggedIn;
     }
 
-    public interface StreamListener {
-
-        void onStreamReady();
-
-        void onStreamFail(final Exception ex);
-    }
     public Jid from;
     public Jid to;
     protected InputStream is;
@@ -78,7 +72,7 @@ public abstract class Stream {
         parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
     }
 
-    public void startParsing() {
+    public void connect() {
         try {
             restartParser();
             handshake();
@@ -221,7 +215,7 @@ public abstract class Stream {
         }
 
         for (StreamListener listener : listenersStream) {
-            listener.onStreamFail(ex);
+            listener.fail(ex);
         }
     }
 }

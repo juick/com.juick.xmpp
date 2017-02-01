@@ -21,8 +21,8 @@ public class StreamComponentServer extends Stream {
     private String streamId, secret;
 
 
-    public StreamComponentServer(Jid from, Jid to, InputStream is, OutputStream os, String password) {
-        super(from, to, is, os);
+    public StreamComponentServer(InputStream is, OutputStream os, String password) {
+        super(null, null, is, os);
         secret = password;
         streamId = UUID.randomUUID().toString();
     }
@@ -34,22 +34,27 @@ public class StreamComponentServer extends Stream {
                 || !parser.getNamespace("stream").equals(NS_STREAM)) {
             throw new IOException("invalid stream");
         }
-        if (!parser.getAttributeValue(null, "to").equals(from.toString())) {
+        Jid domain = Jid.of(parser.getAttributeValue(null, "to"));
+        if (listenersStream.stream().anyMatch(l ->
+                l.filter(null, domain))) {
+            send(new XMPPError(XMPPError.Type.cancel, "forbidden").toString());
             throw new IOException("invalid domain");
         }
+        from = domain;
+        to = domain;
         send(String.format("<stream:stream xmlns:stream='%s' " +
                 "xmlns='%s' from='%s' id='%s'>", NS_STREAM, NS_COMPONENT_ACCEPT, from.asBareJid().toEscapedString(), streamId));
         Handshake handshake = Handshake.parse(parser);
         boolean authenticated = handshake.getValue().equals(DigestUtils.sha1Hex(streamId + secret));
         setLoggedIn(authenticated);
         if (!authenticated) {
-            send(new XMPPError("cancel", "not-authorized").toString());
+            send(new XMPPError(XMPPError.Type.cancel, "not-authorized").toString());
             for (StreamListener streamListener : listenersStream) {
-                streamListener.onStreamFail(new IOException("stream:stream, failed authentication"));
+                streamListener.fail(new IOException("stream:stream, failed authentication"));
             }
             return;
         }
         send(new Handshake().toString());
-        listenersStream.forEach(StreamListener::onStreamReady);
+        listenersStream.forEach(StreamListener::ready);
     }
 }

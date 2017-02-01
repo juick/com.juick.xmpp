@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
  */
 public class ComponentTests {
     @Mock
-    Stream.StreamListener testListener;
+    StreamListener testListener;
     @Mock
     Message.MessageListener messageListener;
 
@@ -45,6 +45,7 @@ public class ComponentTests {
         Socket client = mock(Socket.class);
         Socket server = mock(Socket.class);
         when(serverSocket.accept()).thenReturn(server);
+
         PipedInputStream serverInputStream = new PipedInputStream();
         PipedOutputStream clientOutputStream = new PipedOutputStream(serverInputStream);
         PipedInputStream clientInputStream = new PipedInputStream();
@@ -55,24 +56,28 @@ public class ComponentTests {
         when(server.getInputStream()).thenReturn(serverInputStream);
         when(server.getOutputStream()).thenReturn(serverOutputStream);
 
+        Jid localhost = Jid.of("localhost");
+        StreamListener serverListener = mock(StreamListener.class);
+        when(serverListener.filter(null, localhost)).thenReturn(false);
+
         final StreamComponentServer[] componentServer = new StreamComponentServer[1];
         executorService.submit(() -> {
             try {
                 Socket clientSocket = serverSocket.accept();
-                componentServer[0] = new StreamComponentServer(
-                        Jid.of("localhost"), Jid.of("localhost"), clientSocket.getInputStream(), clientSocket.getOutputStream(), "secret");
-                componentServer[0].startParsing();
+                componentServer[0] = new StreamComponentServer(clientSocket.getInputStream(), clientSocket.getOutputStream(), "secret");
+                componentServer[0].addListener(serverListener);
+                componentServer[0].connect();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
 
-        StreamComponent component = new StreamComponent(Jid.of("localhost"), client.getInputStream(), client.getOutputStream(), "secret");
+        StreamComponent component = new StreamComponent(localhost, client.getInputStream(), client.getOutputStream(), "secret");
         component.addListener(testListener);
         component.addListener(messageListener);
-        executorService.submit(component::startParsing);
+        executorService.submit(component::connect);
 
-        verify(testListener, timeout(5000).times(1)).onStreamReady();
+        verify(testListener, timeout(5000).times(1)).ready();
 
         Message msg = new Message();
         msg.from = Jid.of("vasya@localhost");

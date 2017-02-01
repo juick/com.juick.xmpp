@@ -41,7 +41,7 @@ public class ExtensionsTests {
         dummyStream.addChildParser(new ChatState());
         dummyStream.addChildParser(new ReceiptsRequest());
         dummyStream.addListener(testListener);
-        dummyStream.startParsing();
+        dummyStream.connect();
         messageCaptor = ArgumentCaptor.forClass(Message.class);
         verify(testListener, times(2)).onMessage(messageCaptor.capture());
         List<Message> msgs = messageCaptor.getAllValues();
