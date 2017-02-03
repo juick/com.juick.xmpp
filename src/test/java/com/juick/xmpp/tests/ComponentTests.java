@@ -31,6 +31,8 @@ public class ComponentTests {
 
     @Captor
     ArgumentCaptor<Message> messageCaptor;
+    @Captor
+    ArgumentCaptor<Exception> exceptionArgumentCaptor;
     ExecutorService executorService;
     @Before
     public void setup() {
@@ -88,6 +90,9 @@ public class ComponentTests {
         verify(messageListener, times(1)).onMessage(messageCaptor.capture());
         Message received = messageCaptor.getValue();
         assertEquals("test", received.body);
+        component.send("<yo:people/>");
+        verify(testListener, timeout(5000).times(1)).fail(exceptionArgumentCaptor.capture());
+        assertEquals("invalid-xml", exceptionArgumentCaptor.getValue().getMessage());
     }
 
 }

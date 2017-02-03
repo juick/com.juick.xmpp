@@ -17,6 +17,7 @@
  */
 package com.juick.xmpp;
 
+import com.juick.xmpp.extensions.StreamError;
 import com.juick.xmpp.utils.XmlUtils;
 import org.xmlpull.mxp1.MXParser;
 import org.xmlpull.v1.XmlPullParser;
@@ -160,45 +161,56 @@ public abstract class Stream {
         }
     }
 
-    private void parse() throws XmlPullParserException, IOException, ParseException {
-        while (parser.next() == XmlPullParser.START_TAG) {
-            final String tag = parser.getName();
-            switch (tag) {
-                case "message":
-                    Message msg = Message.parse(parser, childParsers);
-                    for (Message.MessageListener listener : listenersMessage) {
-                        listener.onMessage(msg);
-                    }
-                    break;
-                case "presence":
-                    Presence p = Presence.parse(parser, childParsers);
-                    for (Presence.PresenceListener listener : listenersPresence) {
-                        listener.onPresence(p);
-                    }
-                    break;
-                case "iq":
-                    Iq iq = Iq.parse(parser, childParsers);
-                    final String key = (iq.from == null) ? "" : iq.from.toEscapedString() + "\n" + iq.id;
-                    boolean parsed = false;
-                    if (listenersIqId.containsKey(key)) {
-                        Iq.IqListener l = listenersIqId.get(key);
-                        parsed = l.onIq(iq);
-                        listenersIqId.remove(key);
-                    } else {
-                        for (Iq.IqListener listener : listenersIq) {
-                            parsed |= listener.onIq(iq);
+    private void parse() throws IOException, ParseException {
+        try {
+            while (parser.next() == XmlPullParser.START_TAG) {
+                final String tag = parser.getName();
+                switch (tag) {
+                    case "message":
+                        Message msg = Message.parse(parser, childParsers);
+                        for (Message.MessageListener listener : listenersMessage) {
+                            listener.onMessage(msg);
                         }
-                    }
-                    if (!parsed) {
-                        send(iq.error());
-                    }
-                    break;
-                default:
-                    XmlUtils.skip(parser);
-                    break;
+                        break;
+                    case "presence":
+                        Presence p = Presence.parse(parser, childParsers);
+                        for (Presence.PresenceListener listener : listenersPresence) {
+                            listener.onPresence(p);
+                        }
+                        break;
+                    case "iq":
+                        Iq iq = Iq.parse(parser, childParsers);
+                        final String key = (iq.from == null) ? "" : iq.from.toEscapedString() + "\n" + iq.id;
+                        boolean parsed = false;
+                        if (listenersIqId.containsKey(key)) {
+                            Iq.IqListener l = listenersIqId.get(key);
+                            parsed = l.onIq(iq);
+                            listenersIqId.remove(key);
+                        } else {
+                            for (Iq.IqListener listener : listenersIq) {
+                                parsed |= listener.onIq(iq);
+                            }
+                        }
+                        if (!parsed) {
+                            send(iq.error());
+                        }
+                        break;
+                    case "error":
+                        StreamError error = StreamError.parse(parser);
+                        connectionFailed(new Exception(error.getCondition()));
+                        return;
+                    default:
+                        XmlUtils.skip(parser);
+                        break;
+                }
             }
+            XmlUtils.skip(parser);
+        } catch (XmlPullParserException e) {
+            StreamError invalidXmlError = new StreamError("invalid-xml");
+            send(invalidXmlError.toString());
+            connectionFailed(new Exception(invalidXmlError.getCondition()));
         }
-        XmlUtils.skip(parser);
+
     }
 
     /**
