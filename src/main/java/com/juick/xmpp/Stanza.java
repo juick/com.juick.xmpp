@@ -18,10 +18,11 @@
 package com.juick.xmpp;
 
 import com.juick.xmpp.utils.XmlUtils;
-import java.util.ArrayList;
-import java.util.Iterator;
 import org.xmlpull.v1.XmlPullParser;
 import rocks.xmpp.addr.Jid;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  *
@@ -94,7 +95,7 @@ public class Stanza {
 
     @Override
     public String toString() {
-        String str = "";
+        String str = " xmlns='jabber:client'";
         if (from != null) {
             str += " from='" + from.toEscapedString() + "'";
         }
