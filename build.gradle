@@ -6,7 +6,7 @@ repositories {
 }
 
 dependencies {
-    compile 'rocks.xmpp:xmpp-addr:0.7.3'
+    compile 'rocks.xmpp:xmpp-addr:0.7.4'
     compile 'xpp3:xpp3_min:1.1.4c'
     compile 'commons-codec:commons-codec:1.10'
     testCompile 'junit:junit:4.12'
