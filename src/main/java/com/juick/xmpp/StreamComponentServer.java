@@ -20,6 +20,10 @@ public class StreamComponentServer extends Stream {
 
     private String streamId, secret;
 
+    public String getStreamId() {
+        return streamId;
+    }
+
 
     public StreamComponentServer(InputStream is, OutputStream os, String password) {
         super(null, null, is, os);
