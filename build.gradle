@@ -1,3 +1,7 @@
+plugins {
+    id 'com.github.ben-manes.versions' version '0.15.0'
+}
+
 apply plugin: "java"
 
 repositories {
@@ -10,7 +14,7 @@ dependencies {
     compile 'xpp3:xpp3_min:1.1.4c'
     compile 'commons-codec:commons-codec:1.10'
     testCompile 'junit:junit:4.12'
-    testCompile "org.mockito:mockito-core:1.+"
+    testCompile "org.mockito:mockito-core:2.9.0"
 }
 
 compileJava.options.encoding = 'UTF-8'
