@@ -38,7 +38,7 @@ public class StreamClient extends Stream implements Iq.IqListener {
     public final static String XMLNS = "urn:ietf:params:xml:ns:xmpp-session";
     String password;
 
-    public StreamClient(Jid from, Jid to, InputStream is, OutputStream os, String password) {
+    public StreamClient(Jid from, Jid to, InputStream is, OutputStream os, String password) throws XmlPullParserException {
         super(from, to, is, os);
         this.password = password;
     }

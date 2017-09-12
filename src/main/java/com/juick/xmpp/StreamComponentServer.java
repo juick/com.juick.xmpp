@@ -25,7 +25,7 @@ public class StreamComponentServer extends Stream {
     }
 
 
-    public StreamComponentServer(InputStream is, OutputStream os, String password) {
+    public StreamComponentServer(InputStream is, OutputStream os, String password) throws XmlPullParserException {
         super(null, null, is, os);
         secret = password;
         streamId = UUID.randomUUID().toString();

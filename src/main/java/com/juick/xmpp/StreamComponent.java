@@ -33,7 +33,7 @@ public class StreamComponent extends Stream {
 
     String password;
 
-    public StreamComponent(Jid to, InputStream is, OutputStream os, String password) {
+    public StreamComponent(Jid to, InputStream is, OutputStream os, String password) throws XmlPullParserException {
         super(null, to, is, os);
         this.password = password;
     }

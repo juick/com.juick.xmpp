@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.xmlpull.v1.XmlPullParserException;
 import rocks.xmpp.addr.Jid;
 
 import java.io.IOException;
@@ -41,7 +42,7 @@ public class ComponentTests {
     }
 
     @Test
-    public void componentTest() throws IOException, InterruptedException {
+    public void componentTest() throws IOException, InterruptedException, XmlPullParserException {
 
         ServerSocket serverSocket = mock(ServerSocket.class);
         Socket client = mock(Socket.class);
@@ -69,7 +70,7 @@ public class ComponentTests {
                 componentServer[0] = new StreamComponentServer(clientSocket.getInputStream(), clientSocket.getOutputStream(), "secret");
                 componentServer[0].addListener(serverListener);
                 componentServer[0].connect();
-            } catch (IOException e) {
+            } catch (IOException | XmlPullParserException e) {
                 e.printStackTrace();
             }
         });

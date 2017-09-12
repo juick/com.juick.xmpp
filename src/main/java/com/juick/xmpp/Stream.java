@@ -19,9 +19,9 @@ package com.juick.xmpp;
 
 import com.juick.xmpp.extensions.StreamError;
 import com.juick.xmpp.utils.XmlUtils;
-import org.xmlpull.mxp1.MXParser;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 import rocks.xmpp.addr.Jid;
 
 import java.io.*;
@@ -50,6 +50,7 @@ public abstract class Stream {
     public Jid from;
     public Jid to;
     protected InputStream is;
+    protected XmlPullParserFactory factory;
     protected XmlPullParser parser;
     protected OutputStreamWriter writer;
     Map<String, StanzaChild> childParsers = new HashMap<>();
@@ -60,15 +61,16 @@ public abstract class Stream {
     HashMap<String, Iq.IqListener> listenersIqId = new HashMap<>();
     private boolean loggedIn;
 
-    public Stream(final Jid from, final Jid to, final InputStream is, final OutputStream os) {
+    public Stream(final Jid from, final Jid to, final InputStream is, final OutputStream os) throws XmlPullParserException {
         this.from = from;
         this.to = to;
         this.is = is;
         writer = new OutputStreamWriter(os);
+        factory = XmlPullParserFactory.newInstance();
     }
 
     public void restartParser() throws XmlPullParserException, IOException {
-        parser = new MXParser();
+        parser = factory.newPullParser();
         parser.setInput(new InputStreamReader(is));
         parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
     }

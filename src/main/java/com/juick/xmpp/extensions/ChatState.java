@@ -46,4 +46,8 @@ public class ChatState implements StanzaChild {
         }
         return state;
     }
+    @Override
+    public String toString() {
+        return String.format("<%s xmlns='%s' />", getValue(), getXMLNS());
+    }
 }

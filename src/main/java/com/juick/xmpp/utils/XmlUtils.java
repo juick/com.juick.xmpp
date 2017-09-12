@@ -29,7 +29,7 @@ public class XmlUtils {
 
     public static void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
         String tag = parser.getName();
-        while (!(parser.next() == XmlPullParser.END_TAG && parser.getName().equals(tag))) {
+        while (parser.getName() != null && !(parser.next() == XmlPullParser.END_TAG && parser.getName().equals(tag))) {
         }
     }
 

@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
  * Created by vitalyster on 31.08.2016.
  */
 public class TestStream extends Stream {
-    public TestStream(String testOutput) {
+    public TestStream(String testOutput) throws XmlPullParserException {
         super(null, null, new ByteArrayInputStream(testOutput.getBytes(StandardCharsets.UTF_8)),
                 new OutputStream() {
                     private StringBuilder string = new StringBuilder();
@@ -30,7 +30,6 @@ public class TestStream extends Stream {
 
     @Override
     public void handshake() throws XmlPullParserException, IOException {
-        restartParser();
         parser.next();
     }
 }

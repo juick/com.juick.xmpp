@@ -9,6 +9,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.xmlpull.v1.XmlPullParserException;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class ExtensionsTests {
         MockitoAnnotations.initMocks(this);
     }
     @Test
-    public void chatstateTest() {
+    public void chatstateTest() throws XmlPullParserException {
         TestStream dummyStream = new TestStream(
                 "<stream xmlns='jabber:client'><message to='vasya@localhost'>" +
                         "<active xmlns='http://jabber.org/protocol/chatstates'/>" +
