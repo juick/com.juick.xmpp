@@ -165,7 +165,10 @@ public abstract class Stream {
 
     private void parse() throws IOException, ParseException {
         try {
-            while (parser.next() == XmlPullParser.START_TAG) {
+            while (parser.next() != XmlPullParser.END_DOCUMENT) {
+                if (parser.getEventType() != XmlPullParser.START_TAG) {
+                    continue;
+                }
                 final String tag = parser.getName();
                 switch (tag) {
                     case "message":
@@ -206,7 +209,6 @@ public abstract class Stream {
                         break;
                 }
             }
-            XmlUtils.skip(parser);
         } catch (XmlPullParserException e) {
             StreamError invalidXmlError = new StreamError("invalid-xml");
             send(invalidXmlError.toString());
