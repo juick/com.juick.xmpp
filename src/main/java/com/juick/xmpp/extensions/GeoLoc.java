@@ -20,6 +20,8 @@ package com.juick.xmpp.extensions;
 import com.juick.xmpp.utils.XmlUtils;
 import com.juick.xmpp.*;
 import java.io.IOException;
+
+import org.apache.commons.text.StringEscapeUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -93,10 +95,10 @@ public class GeoLoc implements StanzaChild {
             str += "<accuracy>" + Accuracy + "</accuracy>";
         }
         if (Description != null && Description.length() > 0) {
-            str += "<description>" + XmlUtils.escape(Description) + "</description>";
+            str += "<description>" + StringEscapeUtils.escapeXml10(Description) + "</description>";
         }
         if (Text != null && Text.length() > 0) {
-            str += "<text>" + XmlUtils.escape(Text) + "</text>";
+            str += "<text>" + StringEscapeUtils.escapeXml10(Text) + "</text>";
         }
         if (JuickPlaceID > 0) {
             str += "<uri>http://juick.com/places/" + JuickPlaceID + "</uri>";

@@ -22,6 +22,8 @@ import com.juick.xmpp.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import org.apache.commons.text.StringEscapeUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import rocks.xmpp.addr.Jid;
@@ -91,7 +93,7 @@ public class DiscoItems implements StanzaChild {
                 str += " jid='" + jid.toEscapedString() + "'";
             }
             if (name != null) {
-                str += " name='" + XmlUtils.escape(name) + "'";
+                str += " name='" + StringEscapeUtils.escapeXml10(name) + "'";
             }
             str += "/>";
             return str;

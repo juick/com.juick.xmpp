@@ -20,6 +20,8 @@ package com.juick.xmpp.extensions;
 import com.juick.xmpp.utils.XmlUtils;
 import com.juick.xmpp.*;
 import java.io.IOException;
+
+import org.apache.commons.text.StringEscapeUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -67,7 +69,7 @@ public class Mood implements StanzaChild {
             str += "<" + moodValues[moodId] + "/>";
         }
         if (moodTxt != null && moodTxt.length() > 0) {
-            str += "<text>" + XmlUtils.escape(moodTxt) + "</text>";
+            str += "<text>" + StringEscapeUtils.escapeXml10(moodTxt) + "</text>";
         }
         str += "</" + TagName + ">";
         return str;

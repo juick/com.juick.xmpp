@@ -18,6 +18,7 @@
 package com.juick.xmpp;
 
 import com.juick.xmpp.utils.XmlUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import rocks.xmpp.addr.Jid;
@@ -127,7 +128,7 @@ public class Presence extends Stanza {
         String str = "<" + TagName + super.toString() + ">";
 
         if (show != null) {
-            str += "<show>" + XmlUtils.escape(show) + "</show>";
+            str += "<show>" + StringEscapeUtils.escapeXml10(show) + "</show>";
         }
 
         if (priority >= -128 && priority <= 127) {
@@ -135,7 +136,7 @@ public class Presence extends Stanza {
         }
 
         if (status != null) {
-            str += "<status>" + XmlUtils.escape(status) + "</status>";
+            str += "<status>" + StringEscapeUtils.escapeXml10(status) + "</status>";
         }
 
         for (StanzaChild child : childs) {

@@ -22,6 +22,8 @@ import com.juick.xmpp.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import org.apache.commons.text.StringEscapeUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import rocks.xmpp.addr.Jid;
@@ -149,7 +151,7 @@ public class MucUser implements StanzaChild {
             }
             str += ">";
             if (reason != null) {
-                str += "<reason>" + XmlUtils.escape(reason) + "</reason>";
+                str += "<reason>" + StringEscapeUtils.escapeXml10(reason) + "</reason>";
             }
             str += "</invite>";
             return str;

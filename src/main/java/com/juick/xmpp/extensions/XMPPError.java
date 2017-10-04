@@ -19,6 +19,7 @@ package com.juick.xmpp.extensions;
 
 import com.juick.xmpp.StanzaChild;
 import com.juick.xmpp.utils.XmlUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -82,17 +83,17 @@ public class XMPPError implements StanzaChild {
     public String toString() {
         String str = "<" + TagName + "";
         if (by != null) {
-            str += " by=\"" + XmlUtils.escape(by) + "\"";
+            str += " by=\"" + StringEscapeUtils.escapeXml10(by) + "\"";
         }
         if (type != null) {
-            str += " type=\"" + XmlUtils.escape(type) + "\"";
+            str += " type=\"" + StringEscapeUtils.escapeXml10(type) + "\"";
         }
 
         if (condition != null) {
             str += ">";
-            str += "<" + XmlUtils.escape(condition) + " xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"";
+            str += "<" + StringEscapeUtils.escapeXml10(condition) + " xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"";
             if (text != null) {
-                str += ">" + XmlUtils.escape(text) + "</" + XmlUtils.escape(condition) + ">";
+                str += ">" + StringEscapeUtils.escapeXml10(text) + "</" + StringEscapeUtils.escapeXml10(condition) + ">";
             } else {
                 str += "/>";
             }

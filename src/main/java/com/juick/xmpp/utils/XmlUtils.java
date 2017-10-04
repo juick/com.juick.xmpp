@@ -18,6 +18,8 @@
 package com.juick.xmpp.utils;
 
 import java.io.IOException;
+
+import org.apache.commons.text.StringEscapeUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -62,7 +64,7 @@ public class XmlUtils {
         for (int i = 0; i < parser.getAttributeCount(); i++) {
             String attr = parser.getAttributeName(i);
             if ((!skipXMLNS || !attr.equals("xmlns")) && !attr.contains(":")) {
-                ret += " " + attr + "=\"" + escape(parser.getAttributeValue(i)) + "\"";
+                ret += " " + attr + "=\"" + StringEscapeUtils.escapeXml10(parser.getAttributeValue(i)) + "\"";
             }
         }
         ret += ">";
@@ -76,38 +78,11 @@ public class XmlUtils {
                     skip(parser);
                 }
             } else if (event == XmlPullParser.TEXT) {
-                ret += escape(parser.getText());
+                ret += StringEscapeUtils.escapeXml10(parser.getText());
             }
         }
 
         ret += "</" + tag + ">";
         return ret;
-    }
-
-    public static String escape(String str) {
-        String res = "";
-        for (int i = 0; i < str.length(); i++) {
-            final char c = str.charAt(i);
-            switch (c) {
-                case '<':
-                    res += "&lt;";
-                    break;
-                case '>':
-                    res += "&gt;";
-                    break;
-                case '&':
-                    res += "&amp;";
-                    break;
-                case '\'':
-                    res += "&apos;";
-                    break;
-                case '"':
-                    res += "&quot;";
-                    break;
-                default:
-                    res += c;
-            }
-        }
-        return res;
     }
 }

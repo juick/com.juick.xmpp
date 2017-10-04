@@ -20,6 +20,8 @@ package com.juick.xmpp.extensions;
 import com.juick.xmpp.StanzaChild;
 import com.juick.xmpp.utils.XmlUtils;
 import java.io.IOException;
+
+import org.apache.commons.text.StringEscapeUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -54,7 +56,7 @@ public class Nickname implements StanzaChild {
     @Override
     public String toString() {
         String str = "<" + TagName + " xmlns='" + XMLNS + "'>";
-        str += XmlUtils.escape(Nickname);
+        str += StringEscapeUtils.escapeXml10(Nickname);
         str += "</" + TagName + ">";
         return str;
     }

@@ -18,6 +18,7 @@
 package com.juick.xmpp;
 
 import com.juick.xmpp.utils.XmlUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.xmlpull.v1.XmlPullParser;
 import rocks.xmpp.addr.Jid;
 
@@ -103,10 +104,10 @@ public class Stanza {
             str += " to='" + to.toEscapedString() + "'";
         }
         if (id != null) {
-            str += " id='" + XmlUtils.escape(id) + "'";
+            str += " id='" + StringEscapeUtils.escapeXml10(id) + "'";
         }
         if (type != null) {
-            str += " type='" + XmlUtils.escape(type) + "'";
+            str += " type='" + StringEscapeUtils.escapeXml10(type) + "'";
         }
         return str;
     }

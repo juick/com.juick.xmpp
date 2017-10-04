@@ -33,7 +33,7 @@ public class ExtensionsTests {
     public void chatstateTest() throws XmlPullParserException {
         TestStream dummyStream = new TestStream(
                 "<stream xmlns='jabber:client'><message to='vasya@localhost'>" +
-                        "<active xmlns='http://jabber.org/protocol/chatstates'/>" +
+                        "<active xmlns='http://jabber.org/protocol/chatstates'/><body>Проверка &gt;_&lt;</body>" +
                         "<request xmlns='urn:xmpp:receipts'/>" +
                         "</message>" +
                         "<message to='vasya@localhost'>" +
@@ -48,6 +48,7 @@ public class ExtensionsTests {
         List<Message> msgs = messageCaptor.getAllValues();
         ChatState chatState = (ChatState) msgs.get(0).getChild("http://jabber.org/protocol/chatstates");
         assertEquals("active chatstate", ChatState.State.active, chatState.getValue());
+        assertEquals("Проверка >_<", msgs.get(0).body);
         ChatState errorState = (ChatState) msgs.get(1).getChild("http://jabber.org/protocol/chatstates");
         assertEquals("undefined chatstate should be considered active", ChatState.State.active, errorState.getValue());
         ReceiptsRequest receiptsRequest = (ReceiptsRequest) msgs.get(0).getChild(ReceiptsRequest.XMLNS);

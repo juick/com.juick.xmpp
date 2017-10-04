@@ -17,13 +17,14 @@
  */
 package com.juick.xmpp.extensions;
 
+import com.juick.xmpp.StanzaChild;
 import com.juick.xmpp.utils.XmlUtils;
-import com.juick.xmpp.*;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
+import org.apache.commons.text.StringEscapeUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  *
@@ -107,7 +108,7 @@ public class DiscoInfo implements StanzaChild {
                 str += " type='" + type + "'";
             }
             if (name != null) {
-                str += " name='" + XmlUtils.escape(name) + "'";
+                str += " name='" + StringEscapeUtils.escapeXml10(name) + "'";
             }
             str += "/>";
             return str;

@@ -22,6 +22,8 @@ import com.juick.xmpp.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import org.apache.commons.text.StringEscapeUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import rocks.xmpp.addr.Jid;
@@ -94,14 +96,14 @@ public class Roster implements StanzaChild {
                 str += " jid='" + jid.toEscapedString() + "'";
             }
             if (name != null) {
-                str += " name='" + XmlUtils.escape(name) + "'";
+                str += " name='" + StringEscapeUtils.escapeXml10(name) + "'";
             }
             if (subscription != null) {
                 str += " subscription='" + subscription + "'";
             }
             str += ">";
             if (group != null) {
-                str += "<group>" + XmlUtils.escape(group) + "</group>";
+                str += "<group>" + StringEscapeUtils.escapeXml10(group) + "</group>";
             }
             str += "</item>";
             return str;

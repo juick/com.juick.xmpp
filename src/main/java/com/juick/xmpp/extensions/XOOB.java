@@ -20,6 +20,8 @@ package com.juick.xmpp.extensions;
 import com.juick.xmpp.utils.XmlUtils;
 import com.juick.xmpp.StanzaChild;
 import java.io.IOException;
+
+import org.apache.commons.text.StringEscapeUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -60,10 +62,10 @@ public class XOOB implements StanzaChild {
     public String toString() {
         String str = "<" + TagName + " xmlns='" + XMLNS + "'>";
         if (URL != null && !URL.isEmpty()) {
-            str += "<url>" + XmlUtils.escape(URL) + "</url>";
+            str += "<url>" + StringEscapeUtils.escapeXml10(URL) + "</url>";
         }
         if (Desc != null && !Desc.isEmpty()) {
-            str += "<desc>" + XmlUtils.escape(Desc) + "</desc>";
+            str += "<desc>" + StringEscapeUtils.escapeXml10(Desc) + "</desc>";
         }
         str += "</" + TagName + ">";
         return str;

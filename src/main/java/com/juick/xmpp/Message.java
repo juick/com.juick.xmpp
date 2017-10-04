@@ -18,6 +18,7 @@
 package com.juick.xmpp;
 
 import com.juick.xmpp.utils.XmlUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import rocks.xmpp.addr.Jid;
@@ -117,15 +118,15 @@ public class Message extends Stanza {
         String str = "<" + TagName + super.toString() + ">";
 
         if (subject != null) {
-            str += "<subject>" + XmlUtils.escape(subject) + "</subject>";
+            str += "<subject>" + StringEscapeUtils.escapeXml10(subject) + "</subject>";
         }
 
         if (body != null) {
-            str += "<body>" + XmlUtils.escape(body) + "</body>";
+            str += "<body>" + StringEscapeUtils.escapeXml10(body) + "</body>";
         }
 
         if (thread != null) {
-            str += "<thread>" + XmlUtils.escape(thread) + "</thread>";
+            str += "<thread>" + StringEscapeUtils.escapeXml10(thread) + "</thread>";
         }
 
         for (StanzaChild child : childs) {

@@ -20,6 +20,8 @@ package com.juick.xmpp.extensions;
 import com.juick.xmpp.utils.XmlUtils;
 import com.juick.xmpp.*;
 import java.io.IOException;
+
+import org.apache.commons.text.StringEscapeUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import rocks.xmpp.addr.Jid;
@@ -61,7 +63,7 @@ public class ResourceBinding implements StanzaChild {
     public String toString() {
         String str = "<" + TagName + " xmlns='" + XMLNS + "'>";
         if (resource != null) {
-            str += "<resource>" + XmlUtils.escape(resource) + "</lat>";
+            str += "<resource>" + StringEscapeUtils.escapeXml10(resource) + "</lat>";
         }
         if (jid != null) {
             str += "<Jid>" + jid.toEscapedString() + "</Jid>";

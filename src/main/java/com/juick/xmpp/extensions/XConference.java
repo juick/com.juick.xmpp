@@ -20,6 +20,8 @@ package com.juick.xmpp.extensions;
 import com.juick.xmpp.utils.XmlUtils;
 import com.juick.xmpp.*;
 import java.io.IOException;
+
+import org.apache.commons.text.StringEscapeUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import rocks.xmpp.addr.Jid;
@@ -56,7 +58,7 @@ public class XConference implements StanzaChild {
             str += " jid=\"" + jid.toEscapedString() + "\"";
         }
         if (reason != null) {
-            str += " reason=\"" + XmlUtils.escape(reason) + "\"";
+            str += " reason=\"" + StringEscapeUtils.escapeXml10(reason) + "\"";
         }
         str += "/>";
         return str;
