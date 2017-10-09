@@ -26,6 +26,7 @@ import rocks.xmpp.addr.Jid;
 
 import java.io.*;
 import java.text.ParseException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,6 +62,8 @@ public abstract class Stream {
     List<Iq.IqListener> listenersIq = new ArrayList<>();
     HashMap<String, Iq.IqListener> listenersIqId = new HashMap<>();
     private boolean loggedIn;
+    private Instant created;
+    private Instant updated;
 
     public Stream(final Jid from, final Jid to, final InputStream is, final OutputStream os) throws XmlPullParserException {
         this.from = from;
@@ -69,6 +72,7 @@ public abstract class Stream {
         this.os = os;
         writer = new OutputStreamWriter(this.os);
         factory = XmlPullParserFactory.newInstance();
+        created = updated = Instant.now();
     }
 
     public void restartStream() throws XmlPullParserException, IOException {
@@ -159,6 +163,7 @@ public abstract class Stream {
 
     public void send(final String str) {
         try {
+            updated = Instant.now();
             writer.write(str);
             writer.flush();
         } catch (final Exception e) {
@@ -169,9 +174,13 @@ public abstract class Stream {
     private void parse() throws IOException, ParseException {
         try {
             while (parser.next() != XmlPullParser.END_DOCUMENT) {
+                if (parser.getEventType() == XmlPullParser.IGNORABLE_WHITESPACE) {
+                    updated = Instant.now();
+                }
                 if (parser.getEventType() != XmlPullParser.START_TAG) {
                     continue;
                 }
+                updated = Instant.now();
                 final String tag = parser.getName();
                 switch (tag) {
                     case "message":
@@ -243,5 +252,13 @@ public abstract class Stream {
     }
     public void setOutputStream(OutputStream os) {
         this.os = os;
+    }
+
+    public Instant getCreated() {
+        return created;
+    }
+
+    public Instant getUpdated() {
+        return updated;
     }
 }
