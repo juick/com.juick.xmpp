@@ -49,7 +49,7 @@ public abstract class Stream {
 
     public Jid from;
     public Jid to;
-    protected InputStream is;
+    private InputStream is;
     protected XmlPullParserFactory factory;
     protected XmlPullParser parser;
     protected OutputStreamWriter writer;
@@ -233,5 +233,9 @@ public abstract class Stream {
         for (StreamListener listener : listenersStream) {
             listener.fail(ex);
         }
+    }
+
+    public void setInputStream(InputStream is) {
+        this.is = is;
     }
 }
