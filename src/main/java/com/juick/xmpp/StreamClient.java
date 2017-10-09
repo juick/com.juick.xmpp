@@ -80,7 +80,7 @@ public class StreamClient extends Stream implements Iq.IqListener {
 
         send("<stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' to='" + to.getDomain() +
                 "' version='1.0'>");
-        restartParser();
+        restartStream();
         do {
             parser.next();
         } while (!(parser.getEventType() == XmlPullParser.END_TAG && parser.getName().equals("features")));

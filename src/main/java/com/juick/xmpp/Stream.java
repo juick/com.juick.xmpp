@@ -50,6 +50,7 @@ public abstract class Stream {
     public Jid from;
     public Jid to;
     private InputStream is;
+    private OutputStream os;
     protected XmlPullParserFactory factory;
     protected XmlPullParser parser;
     protected OutputStreamWriter writer;
@@ -65,19 +66,21 @@ public abstract class Stream {
         this.from = from;
         this.to = to;
         this.is = is;
-        writer = new OutputStreamWriter(os);
+        this.os = os;
+        writer = new OutputStreamWriter(this.os);
         factory = XmlPullParserFactory.newInstance();
     }
 
-    public void restartParser() throws XmlPullParserException, IOException {
+    public void restartStream() throws XmlPullParserException, IOException {
         parser = factory.newPullParser();
         parser.setInput(new InputStreamReader(is));
         parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
+        writer = new OutputStreamWriter(os);
     }
 
     public void connect() {
         try {
-            restartParser();
+            restartStream();
             handshake();
             parse();
         } catch (final Exception e) {
@@ -237,5 +240,8 @@ public abstract class Stream {
 
     public void setInputStream(InputStream is) {
         this.is = is;
+    }
+    public void setOutputStream(OutputStream os) {
+        this.os = os;
     }
 }
