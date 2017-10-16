@@ -17,13 +17,11 @@
  */
 package com.juick.xmpp;
 
-import com.juick.xmpp.utils.XmlUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.xmlpull.v1.XmlPullParser;
 import rocks.xmpp.addr.Jid;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  *
@@ -35,7 +33,7 @@ public class Stanza {
     public Jid to = null;
     public String id = Long.toString(System.currentTimeMillis());
     public String type = null;
-    public ArrayList<StanzaChild> childs = new ArrayList<StanzaChild>();
+    public ArrayList<StanzaChild> childs = new ArrayList<>();
 
     public Stanza() {
     }
@@ -69,9 +67,7 @@ public class Stanza {
     }
 
     public StanzaChild getChild(String XMLNS) {
-        Iterator<StanzaChild> i = childs.iterator();
-        while (i.hasNext()) {
-            StanzaChild ce = (StanzaChild) i.next();
+        for (StanzaChild ce : childs) {
             if (ce.getXMLNS().equals(XMLNS)) {
                 return ce;
             }
@@ -96,19 +92,19 @@ public class Stanza {
 
     @Override
     public String toString() {
-        String str = " xmlns='jabber:client'";
+        StringBuilder sb = new StringBuilder(" xmlns='jabber:client'");
         if (from != null) {
-            str += " from='" + from.toEscapedString() + "'";
+            sb.append(" from='").append(from.toEscapedString()).append("'");
         }
         if (to != null) {
-            str += " to='" + to.toEscapedString() + "'";
+            sb.append(" to='").append(to.toEscapedString()).append("'");
         }
         if (id != null) {
-            str += " id='" + StringEscapeUtils.escapeXml10(id) + "'";
+            sb.append(" id='").append(StringEscapeUtils.escapeXml10(id)).append("'");
         }
         if (type != null) {
-            str += " type='" + StringEscapeUtils.escapeXml10(type) + "'";
+            sb.append(" type='").append(StringEscapeUtils.escapeXml10(type)).append("'");
         }
-        return str;
+        return sb.toString();
     }
 }

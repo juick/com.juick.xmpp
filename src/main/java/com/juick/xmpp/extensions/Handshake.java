@@ -29,12 +29,12 @@ public class Handshake {
 
     @Override
     public String toString() {
-        String str = "<handshake";
+        StringBuilder str = new StringBuilder("<handshake");
         if (getValue() != null) {
-            str += ">" + getValue() + "</handshake>";
+            str.append(">").append(getValue()).append("</handshake>");
         } else {
-            str += "/>";
+            str.append("/>");
         }
-        return str;
+        return str.toString();
     }
 }

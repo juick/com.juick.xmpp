@@ -115,25 +115,25 @@ public class Message extends Stanza {
 
     @Override
     public String toString() {
-        String str = "<" + TagName + super.toString() + ">";
+        StringBuilder str = new StringBuilder("<").append(TagName).append(super.toString()).append(">");
 
         if (subject != null) {
-            str += "<subject>" + StringEscapeUtils.escapeXml10(subject) + "</subject>";
+            str.append("<subject>").append(StringEscapeUtils.escapeXml10(subject)).append("</subject>");
         }
 
         if (body != null) {
-            str += "<body>" + StringEscapeUtils.escapeXml10(body) + "</body>";
+            str.append("<body>").append(StringEscapeUtils.escapeXml10(body)).append("</body>");
         }
 
         if (thread != null) {
-            str += "<thread>" + StringEscapeUtils.escapeXml10(thread) + "</thread>";
+            str.append("<thread>").append(StringEscapeUtils.escapeXml10(thread)).append("</thread>");
         }
 
         for (StanzaChild child : childs) {
-            str += child.toString();
+            str.append(child.toString());
         }
 
-        str += "</" + TagName + ">";
-        return str;
+        str.append("</").append(TagName).append(">");
+        return str.toString();
     }
 }

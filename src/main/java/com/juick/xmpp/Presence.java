@@ -125,25 +125,25 @@ public class Presence extends Stanza {
 
     @Override
     public String toString() {
-        String str = "<" + TagName + super.toString() + ">";
+        StringBuilder str =  new StringBuilder("<").append(TagName).append(super.toString()).append(">");
 
         if (show != null) {
-            str += "<show>" + StringEscapeUtils.escapeXml10(show) + "</show>";
+            str.append("<show>").append(StringEscapeUtils.escapeXml10(show)).append("</show>");
         }
 
         if (priority >= -128 && priority <= 127) {
-            str += "<priority>" + priority + "</priority>";
+            str.append("<priority>").append(priority).append("</priority>");
         }
 
         if (status != null) {
-            str += "<status>" + StringEscapeUtils.escapeXml10(status) + "</status>";
+            str.append("<status>").append(StringEscapeUtils.escapeXml10(status)).append("</status>");
         }
 
         for (StanzaChild child : childs) {
-            str += child.toString();
+            str.append(child.toString());
         }
 
-        str += "</" + TagName + ">";
-        return str;
+        str.append("</").append(TagName).append(">");
+        return str.toString();
     }
 }

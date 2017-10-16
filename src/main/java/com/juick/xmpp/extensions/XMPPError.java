@@ -81,27 +81,28 @@ public class XMPPError implements StanzaChild {
 
     @Override
     public String toString() {
-        String str = "<" + TagName + "";
+        StringBuilder str = new StringBuilder("<").append(TagName).append("");
         if (by != null) {
-            str += " by=\"" + StringEscapeUtils.escapeXml10(by) + "\"";
+            str.append(" by=\"").append(StringEscapeUtils.escapeXml10(by)).append("\"");
         }
         if (type != null) {
-            str += " type=\"" + StringEscapeUtils.escapeXml10(type) + "\"";
+            str.append(" type=\"").append(StringEscapeUtils.escapeXml10(type)).append("\"");
         }
 
         if (condition != null) {
-            str += ">";
-            str += "<" + StringEscapeUtils.escapeXml10(condition) + " xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"";
+            str.append(">");
+            str.append("<").append(StringEscapeUtils.escapeXml10(condition)).append(" xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"");
             if (text != null) {
-                str += ">" + StringEscapeUtils.escapeXml10(text) + "</" + StringEscapeUtils.escapeXml10(condition) + ">";
+                str.append(">").append(StringEscapeUtils.escapeXml10(text)).append("</").append(StringEscapeUtils.escapeXml10(condition))
+                    .append(">");
             } else {
-                str += "/>";
+                str.append("/>");
             }
-            str += "</" + TagName + ">";
+            str.append("</").append(TagName).append(">");
         } else {
-            str += "/>";
+            str.append("/>");
         }
 
-        return str;
+        return str.toString();
     }
 }

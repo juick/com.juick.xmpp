@@ -52,37 +52,37 @@ public class XmlUtils {
 
     public static String parseToString(XmlPullParser parser, boolean skipXMLNS) throws XmlPullParserException, IOException {
         String tag = parser.getName();
-        String ret = "<" + tag;
+        StringBuilder ret = new StringBuilder("<").append(tag);
 
         // skipXMLNS for xmlns="jabber:client"
 
         String ns = parser.getNamespace();
         if (!skipXMLNS && ns != null && !ns.isEmpty()) {
-            ret += " xmlns=\"" + ns + "\"";
+            ret.append(" xmlns=\"").append(ns).append("\"");
         }
 
         for (int i = 0; i < parser.getAttributeCount(); i++) {
             String attr = parser.getAttributeName(i);
             if ((!skipXMLNS || !attr.equals("xmlns")) && !attr.contains(":")) {
-                ret += " " + attr + "=\"" + StringEscapeUtils.escapeXml10(parser.getAttributeValue(i)) + "\"";
+                ret.append(" ").append(attr).append("=\"").append(StringEscapeUtils.escapeXml10(parser.getAttributeValue(i))).append("\"");
             }
         }
-        ret += ">";
+        ret.append(">");
 
         while (!(parser.next() == XmlPullParser.END_TAG && parser.getName().equals(tag))) {
             int event = parser.getEventType();
             if (event == XmlPullParser.START_TAG) {
                 if (!parser.getName().contains(":")) {
-                    ret += parseToString(parser, false);
+                    ret.append(parseToString(parser, false));
                 } else {
                     skip(parser);
                 }
             } else if (event == XmlPullParser.TEXT) {
-                ret += StringEscapeUtils.escapeXml10(parser.getText());
+                ret.append(StringEscapeUtils.escapeXml10(parser.getText()));
             }
         }
 
-        ret += "</" + tag + ">";
-        return ret;
+        ret.append("</").append(tag).append(">");
+        return ret.toString();
     }
 }

@@ -17,16 +17,15 @@
  */
 package com.juick.xmpp.extensions;
 
+import com.juick.xmpp.StanzaChild;
 import com.juick.xmpp.utils.XmlUtils;
-import com.juick.xmpp.*;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import org.apache.commons.text.StringEscapeUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import rocks.xmpp.addr.Jid;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * http://xmpp.org/rfcs/rfc3921.html#roster
@@ -36,7 +35,7 @@ public class Roster implements StanzaChild {
 
     public final static String XMLNS = "jabber:iq:roster";
     public final static String TagName = "query";
-    public ArrayList<Item> items = new ArrayList<Item>();
+    public ArrayList<Item> items = new ArrayList<>();
 
     @Override
     public String getXMLNS() {
@@ -74,12 +73,12 @@ public class Roster implements StanzaChild {
 
     @Override
     public String toString() {
-        String str = "<" + TagName + " xmlns='" + XMLNS + "'>";
-        for (Iterator<Item> i = items.iterator(); i.hasNext();) {
-            str += i.next().toString();
+        StringBuilder str = new StringBuilder("<").append(TagName).append(" xmlns='").append(XMLNS).append("'>");
+        for (Item item : items) {
+            str.append(item.toString());
         }
-        str += "</" + TagName + ">";
-        return str;
+        str.append("</").append(TagName).append(">");
+        return str.toString();
     }
 
     public static class Item {
@@ -91,22 +90,22 @@ public class Roster implements StanzaChild {
 
         @Override
         public String toString() {
-            String str = "<item";
+            StringBuilder str = new StringBuilder("<item");
             if (jid != null) {
-                str += " jid='" + jid.toEscapedString() + "'";
+                str.append(" jid='").append(jid.toEscapedString()).append("'");
             }
             if (name != null) {
-                str += " name='" + StringEscapeUtils.escapeXml10(name) + "'";
+                str.append(" name='").append(StringEscapeUtils.escapeXml10(name)).append("'");
             }
             if (subscription != null) {
-                str += " subscription='" + subscription + "'";
+                str.append(" subscription='").append(subscription).append("'");
             }
-            str += ">";
+            str.append(">");
             if (group != null) {
-                str += "<group>" + StringEscapeUtils.escapeXml10(group) + "</group>";
+                str.append("<group>").append(StringEscapeUtils.escapeXml10(group)).append("</group>");
             }
-            str += "</item>";
-            return str;
+            str.append("</item>");
+            return str.toString();
         }
     }
 }
