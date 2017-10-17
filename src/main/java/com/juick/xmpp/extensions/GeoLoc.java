@@ -84,26 +84,26 @@ public class GeoLoc implements StanzaChild {
 
     @Override
     public String toString() {
-        String str = "<" + TagName + " xmlns='" + XMLNS + "'>";
+        StringBuilder str = new StringBuilder("<").append(TagName).append(" xmlns='").append(XMLNS).append("'>");
         if (Lat != null && Lat.length() > 0) {
-            str += "<lat>" + Lat + "</lat>";
+            str.append("<lat>").append(Lat).append("</lat>");
         }
         if (Lon != null && Lon.length() > 0) {
-            str += "<lon>" + Lon + "</lon>";
+            str.append("<lon>").append(Lon).append("</lon>");
         }
         if (Accuracy > 0) {
-            str += "<accuracy>" + Accuracy + "</accuracy>";
+            str.append("<accuracy>").append(Accuracy).append("</accuracy>");
         }
         if (Description != null && Description.length() > 0) {
-            str += "<description>" + StringEscapeUtils.escapeXml10(Description) + "</description>";
+            str.append("<description>").append(StringEscapeUtils.escapeXml10(Description)).append("</description>");
         }
         if (Text != null && Text.length() > 0) {
-            str += "<text>" + StringEscapeUtils.escapeXml10(Text) + "</text>";
+            str.append("<text>").append(StringEscapeUtils.escapeXml10(Text)).append("</text>");
         }
         if (JuickPlaceID > 0) {
-            str += "<uri>http://juick.com/places/" + JuickPlaceID + "</uri>";
+            str.append("<uri>http://juick.com/places/").append(JuickPlaceID).append("</uri>");
         }
-        str += "</" + TagName + ">";
-        return str;
+        str.append("</").append(TagName).append(">");
+        return str.toString();
     }
 }

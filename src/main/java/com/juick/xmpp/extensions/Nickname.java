@@ -55,9 +55,7 @@ public class Nickname implements StanzaChild {
 
     @Override
     public String toString() {
-        String str = "<" + TagName + " xmlns='" + XMLNS + "'>";
-        str += StringEscapeUtils.escapeXml10(Nickname);
-        str += "</" + TagName + ">";
-        return str;
+        return new StringBuilder("<").append(TagName).append(" xmlns='").append(XMLNS).append("'>")
+            .append(StringEscapeUtils.escapeXml10(Nickname)).append("</").append(TagName).append(">").toString();
     }
 }

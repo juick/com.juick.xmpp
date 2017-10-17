@@ -37,7 +37,7 @@ public class MucUser implements StanzaChild {
     public final static String XMLNS = "http://jabber.org/protocol/muc#user";
     public final static String TagName = "x";
     public Item item = null;
-    public ArrayList<Integer> status = new ArrayList<Integer>();
+    public ArrayList<Integer> status = new ArrayList<>();
     public Invite invite = null;
 
     @Override
@@ -58,7 +58,7 @@ public class MucUser implements StanzaChild {
     }
 
     public void addStatus(final int code) {
-        status.add(new Integer(code));
+        status.add(code);
     }
 
     @Override
@@ -67,21 +67,25 @@ public class MucUser implements StanzaChild {
 
         while (parser.next() == XmlPullParser.START_TAG) {
             final String tag = parser.getName();
-            if (tag.equals("item")) {
-                di.item = new Item();
-                di.item.affiliation = parser.getAttributeValue(null, "affiliation");
-                di.item.role = parser.getAttributeValue(null, "role");
-            } else if (tag.equals("status")) {
-                String codestr = parser.getAttributeValue(null, "code");
-                try {
-                    int code = Integer.parseInt(codestr);
-                    if (code >= 100 && code <= 999) {
-                        di.status.add(code);
+            switch (tag) {
+                case "item":
+                    di.item = new Item();
+                    di.item.affiliation = parser.getAttributeValue(null, "affiliation");
+                    di.item.role = parser.getAttributeValue(null, "role");
+                    break;
+                case "status":
+                    String codestr = parser.getAttributeValue(null, "code");
+                    try {
+                        int code = Integer.parseInt(codestr);
+                        if (code >= 100 && code <= 999) {
+                            di.status.add(code);
+                        }
+                    } catch (NumberFormatException e) {
                     }
-                } catch (NumberFormatException e) {
-                }
-            } else {
-                XmlUtils.skip(parser);
+                    break;
+                default:
+                    XmlUtils.skip(parser);
+                    break;
             }
         }
         return di;
@@ -89,18 +93,18 @@ public class MucUser implements StanzaChild {
 
     @Override
     public String toString() {
-        String str = "<" + TagName + " xmlns='" + XMLNS + "'>";
+        StringBuilder str = new StringBuilder("<").append(TagName).append(" xmlns='").append(XMLNS).append("'>");
         if (item != null) {
-            str += item.toString();
+            str.append(item.toString());
         }
         if (invite != null) {
-            str += invite.toString();
+            str.append(invite.toString());
         }
-        for (Iterator<Integer> i = status.iterator(); i.hasNext();) {
-            str += "<status code='" + i.next() + "'/>";
+        for (Integer statu : status) {
+            str.append("<status code='").append(statu).append("'/>");
         }
-        str += "</" + TagName + ">";
-        return str;
+        str.append("</").append(TagName).append(">");
+        return str.toString();
     }
 
     public static class Item {
@@ -126,15 +130,15 @@ public class MucUser implements StanzaChild {
 
         @Override
         public String toString() {
-            String str = "<item";
+            StringBuilder str = new StringBuilder("<item");
             if (affiliation != null) {
-                str += " affiliation='" + affiliation + "'";
+                str.append(" affiliation='").append(affiliation).append("'");
             }
             if (role != null) {
-                str += " role='" + role + "'";
+                str.append(" role='").append(role).append("'");
             }
-            str += "/>";
-            return str;
+            str.append("/>");
+            return str.toString();
         }
     }
 
@@ -145,16 +149,16 @@ public class MucUser implements StanzaChild {
 
         @Override
         public String toString() {
-            String str = "<invite";
+            StringBuilder str = new StringBuilder("<invite");
             if (from != null) {
-                str += " from='" + from.toEscapedString() + "'";
+                str.append(" from='").append(from.toEscapedString()).append("'");
             }
-            str += ">";
+            str.append(">");
             if (reason != null) {
-                str += "<reason>" + StringEscapeUtils.escapeXml10(reason) + "</reason>";
+                str.append("<reason>").append(StringEscapeUtils.escapeXml10(reason)).append("</reason>");
             }
-            str += "</invite>";
-            return str;
+            str.append("</invite>");
+            return str.toString();
         }
     }
 }

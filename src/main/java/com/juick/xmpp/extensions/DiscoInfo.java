@@ -34,8 +34,8 @@ public class DiscoInfo implements StanzaChild {
 
     public final static String XMLNS = "http://jabber.org/protocol/disco#info";
     public final static String TagName = "query";
-    public ArrayList<Identity> identities = new ArrayList<Identity>();
-    public ArrayList<String> features = new ArrayList<String>();
+    public ArrayList<Identity> identities = new ArrayList<>();
+    public ArrayList<String> features = new ArrayList<>();
 
     @Override
     public String getXMLNS() {
@@ -81,15 +81,15 @@ public class DiscoInfo implements StanzaChild {
 
     @Override
     public String toString() {
-        String str = "<" + TagName + " xmlns='" + XMLNS + "'>";
+        StringBuilder str = new StringBuilder("<").append(TagName).append(" xmlns='").append(XMLNS).append("'>");
         for (Identity identity : identities) {
-            str += identity.toString();
+            str.append(identity.toString());
         }
         for (String feature : features) {
-            str += "<feature var='" + feature + "'/>";
+            str.append("<feature var='").append(feature).append("'/>");
         }
-        str += "</" + TagName + ">";
-        return str;
+        str.append("</").append(TagName).append(">");
+        return str.toString();
     }
 
     public static class Identity {
@@ -100,18 +100,18 @@ public class DiscoInfo implements StanzaChild {
 
         @Override
         public String toString() {
-            String str = "<identity";
+            StringBuilder str = new StringBuilder("<identity");
             if (category != null) {
-                str += " category='" + category + "'";
+                str.append(" category='").append(category).append("'");
             }
             if (type != null) {
-                str += " type='" + type + "'";
+                str.append(" type='").append(type).append("'");
             }
             if (name != null) {
-                str += " name='" + StringEscapeUtils.escapeXml10(name) + "'";
+                str.append(" name='").append(StringEscapeUtils.escapeXml10(name)).append("'");
             }
-            str += "/>";
-            return str;
+            str.append("/>");
+            return str.toString();
         }
     }
 }

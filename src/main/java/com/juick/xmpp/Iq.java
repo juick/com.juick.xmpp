@@ -63,11 +63,7 @@ public class Iq extends Stanza {
     }
 
     public StanzaChild getChild() {
-        if (!childs.isEmpty()) {
-            return (StanzaChild) childs.get(0);
-        } else {
-            return null;
-        }
+        return childs.isEmpty() ? null : childs.get(0);
     }
 
     public Iq reply() {
@@ -119,14 +115,14 @@ public class Iq extends Stanza {
 
     @Override
     public String toString() {
-        String str = "<" + TagName + super.toString() + ">";
+        StringBuilder str = new StringBuilder("<").append(TagName).append(super.toString()).append(">");
         for (StanzaChild child : childs) {
-            str += child.toString();
+            str.append(child.toString());
         }
         if (type.equals(Type.error)) {
-            str += "<error type='cancel'><service-unavailable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas' /></error>";
+            str.append("<error type='cancel'><service-unavailable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas' /></error>");
         }
-        str += "</" + TagName + ">";
-        return str;
+        str.append("</").append(TagName).append(">");
+        return str.toString();
     }
 }

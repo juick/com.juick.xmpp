@@ -59,20 +59,20 @@ public class Delay implements StanzaChild {
 
     @Override
     public String toString() {
-        String str = "<" + TagName + " xmlns='" + XMLNS + "'";
+        StringBuilder str = new StringBuilder("<").append(TagName).append(" xmlns='").append(XMLNS).append("'");
         if (from != null) {
-            str += " from='" + from.toEscapedString() + "'";
+            str.append(" from='").append(from.toEscapedString()).append("'");
         }
         if (stamp != null) {
-            str += " stamp='" + stamp + "'";
+            str.append(" stamp='").append(stamp).append("'");
         }
-        str += ">";
+        str.append(">");
 
         if (description != null) {
-            str += StringEscapeUtils.escapeXml10(description);
+            str.append(StringEscapeUtils.escapeXml10(description));
         }
 
-        str += "</" + TagName + ">";
-        return str;
+        str.append("</").append(TagName).append(">");
+        return str.toString();
     }
 }

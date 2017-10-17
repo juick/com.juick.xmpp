@@ -64,14 +64,14 @@ public class Mood implements StanzaChild {
 
     @Override
     public String toString() {
-        String str = "<" + TagName + " xmlns='" + XMLNS + "'>";
+        StringBuilder str = new StringBuilder("<").append(TagName).append(" xmlns='").append(XMLNS).append("'>");
         if (moodId > -1) {
-            str += "<" + moodValues[moodId] + "/>";
+            str.append("<").append(moodValues[moodId]).append("/>");
         }
         if (moodTxt != null && moodTxt.length() > 0) {
-            str += "<text>" + StringEscapeUtils.escapeXml10(moodTxt) + "</text>";
+            str.append("<text>").append(StringEscapeUtils.escapeXml10(moodTxt)).append("</text>");
         }
-        str += "</" + TagName + ">";
-        return str;
+        str.append("</").append(TagName).append(">");
+        return str.toString();
     }
 }

@@ -48,12 +48,16 @@ public class ResourceBinding implements StanzaChild {
 
         while (parser.next() == XmlPullParser.START_TAG) {
             final String tag = parser.getName();
-            if (tag.equals("resource")) {
-                rb.resource = XmlUtils.getTagText(parser);
-            } else if (tag.equals("Jid")) {
-                rb.jid = Jid.of(XmlUtils.getTagText(parser));
-            } else {
-                XmlUtils.skip(parser);
+            switch (tag) {
+                case "resource":
+                    rb.resource = XmlUtils.getTagText(parser);
+                    break;
+                case "Jid":
+                    rb.jid = Jid.of(XmlUtils.getTagText(parser));
+                    break;
+                default:
+                    XmlUtils.skip(parser);
+                    break;
             }
         }
         return rb;
@@ -61,14 +65,14 @@ public class ResourceBinding implements StanzaChild {
 
     @Override
     public String toString() {
-        String str = "<" + TagName + " xmlns='" + XMLNS + "'>";
+        StringBuilder str = new StringBuilder("<").append(TagName).append(" xmlns='").append(XMLNS).append("'>");
         if (resource != null) {
-            str += "<resource>" + StringEscapeUtils.escapeXml10(resource) + "</lat>";
+            str.append("<resource>").append(StringEscapeUtils.escapeXml10(resource)).append("</lat>");
         }
         if (jid != null) {
-            str += "<Jid>" + jid.toEscapedString() + "</Jid>";
+            str.append("<Jid>").append(jid.toEscapedString()).append("</Jid>");
         }
-        str += "</" + TagName + ">";
-        return str;
+        str.append("</").append(TagName).append(">");
+        return str.toString();
     }
 }

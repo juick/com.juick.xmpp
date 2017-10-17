@@ -47,12 +47,16 @@ public class XOOB implements StanzaChild {
 
         while (parser.next() == XmlPullParser.START_TAG) {
             final String tag = parser.getName();
-            if (tag.equals("url")) {
-                oob.URL = XmlUtils.getTagText(parser);
-            } else if (tag.equals("desc")) {
-                oob.Desc = XmlUtils.getTagText(parser);
-            } else {
-                XmlUtils.skip(parser);
+            switch (tag) {
+                case "url":
+                    oob.URL = XmlUtils.getTagText(parser);
+                    break;
+                case "desc":
+                    oob.Desc = XmlUtils.getTagText(parser);
+                    break;
+                default:
+                    XmlUtils.skip(parser);
+                    break;
             }
         }
         return oob;
@@ -60,14 +64,14 @@ public class XOOB implements StanzaChild {
 
     @Override
     public String toString() {
-        String str = "<" + TagName + " xmlns='" + XMLNS + "'>";
+        StringBuilder str = new StringBuilder("<").append(TagName).append(" xmlns='").append(XMLNS).append("'>");
         if (URL != null && !URL.isEmpty()) {
-            str += "<url>" + StringEscapeUtils.escapeXml10(URL) + "</url>";
+            str.append("<url>").append(StringEscapeUtils.escapeXml10(URL)).append("</url>");
         }
         if (Desc != null && !Desc.isEmpty()) {
-            str += "<desc>" + StringEscapeUtils.escapeXml10(Desc) + "</desc>";
+            str.append("<desc>").append(StringEscapeUtils.escapeXml10(Desc)).append("</desc>");
         }
-        str += "</" + TagName + ">";
-        return str;
+        str.append("</").append(TagName).append(">");
+        return str.toString();
     }
 }

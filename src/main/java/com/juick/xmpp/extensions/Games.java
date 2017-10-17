@@ -72,16 +72,22 @@ public class Games implements StanzaChild {
                 XmlUtils.skip(parser);
             }
         } else {
-            if (tag.equals("decline")) {
-                games.action = DECLINE;
-            } else if (tag.equals("join")) {
-                games.action = JOIN;
-            } else if (tag.equals("saved")) {
-                games.action = SAVED;
-            } else if (tag.equals("save")) {
-                games.action = SAVE;
-            } else if (tag.equals("terminate")) {
-                games.action = TERMINATE;
+            switch (tag) {
+                case "decline":
+                    games.action = DECLINE;
+                    break;
+                case "join":
+                    games.action = JOIN;
+                    break;
+                case "saved":
+                    games.action = SAVED;
+                    break;
+                case "save":
+                    games.action = SAVE;
+                    break;
+                case "terminate":
+                    games.action = TERMINATE;
+                    break;
             }
             XmlUtils.skip(parser);
         }

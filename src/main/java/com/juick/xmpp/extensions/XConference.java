@@ -53,14 +53,14 @@ public class XConference implements StanzaChild {
 
     @Override
     public String toString() {
-        String str = "<" + TagName + " xmlns='" + XMLNS + "'";
+        StringBuilder str = new StringBuilder("<").append(TagName).append(" xmlns='").append(XMLNS).append("'");
         if (jid != null) {
-            str += " jid=\"" + jid.toEscapedString() + "\"";
+            str.append(" jid=\"").append(jid.toEscapedString()).append("\"");
         }
         if (reason != null) {
-            str += " reason=\"" + StringEscapeUtils.escapeXml10(reason) + "\"";
+            str.append(" reason=\"").append(StringEscapeUtils.escapeXml10(reason)).append("\"");
         }
-        str += "/>";
-        return str;
+        str.append("/>");
+        return str.toString();
     }
 }
