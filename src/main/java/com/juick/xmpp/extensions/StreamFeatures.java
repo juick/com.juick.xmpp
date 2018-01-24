@@ -35,8 +35,8 @@ public class StreamFeatures {
     public int ZLIB = NOTAVAILABLE;
     public int PLAIN = NOTAVAILABLE;
     public int DIGEST_MD5 = NOTAVAILABLE;
-    public int X_GOOGLE_TOKEN = NOTAVAILABLE;
     public int REGISTER = NOTAVAILABLE;
+    public int EXTERNAL = NOTAVAILABLE;
 
     public static StreamFeatures parse(final XmlPullParser parser) throws XmlPullParserException, IOException {
         StreamFeatures features = new StreamFeatures();
@@ -74,8 +74,8 @@ public class StreamFeatures {
                                 features.PLAIN = AVAILABLE;
                             } else if (mechanism.equals("DIGEST-MD5")) {
                                 features.DIGEST_MD5 = AVAILABLE;
-                            } else if (mechanism.equals("X-GOOGLE-TOKEN")) {
-                                features.X_GOOGLE_TOKEN = AVAILABLE;
+                            } else if (mechanism.equals("EXTERNAL")) {
+                                features.EXTERNAL = AVAILABLE;
                             }
                         } else {
                             XmlUtils.skip(parser);
