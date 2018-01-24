@@ -70,7 +70,6 @@ public abstract class Stream {
         this.to = to;
         this.is = is;
         this.os = os;
-        writer = new OutputStreamWriter(this.os);
         factory = XmlPullParserFactory.newInstance();
         created = updated = Instant.now();
     }
