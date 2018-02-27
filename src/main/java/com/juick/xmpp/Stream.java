@@ -24,7 +24,12 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 import rocks.xmpp.addr.Jid;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -79,9 +84,9 @@ public abstract class Stream {
 
     public void restartStream() throws XmlPullParserException, IOException {
         parser = factory.newPullParser();
-        parser.setInput(new InputStreamReader(is));
+        parser.setInput(new InputStreamReader(is, StandardCharsets.UTF_8));
         parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
-        writer = new OutputStreamWriter(os);
+        writer = new OutputStreamWriter(os, StandardCharsets.UTF_8);
     }
 
     public void connect() {
