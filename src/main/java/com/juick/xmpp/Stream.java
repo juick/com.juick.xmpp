@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  *
@@ -64,6 +65,7 @@ public abstract class Stream {
     private boolean loggedIn;
     private Instant created;
     private Instant updated;
+    private String streamId;
 
     public Stream(final Jid from, final Jid to, final InputStream is, final OutputStream os) throws XmlPullParserException {
         this.from = from;
@@ -72,6 +74,7 @@ public abstract class Stream {
         this.os = os;
         factory = XmlPullParserFactory.newInstance();
         created = updated = Instant.now();
+        streamId = UUID.randomUUID().toString();
     }
 
     public void restartStream() throws XmlPullParserException, IOException {
@@ -259,5 +262,8 @@ public abstract class Stream {
 
     public Instant getUpdated() {
         return updated;
+    }
+    public String getStreamId() {
+        return streamId;
     }
 }
