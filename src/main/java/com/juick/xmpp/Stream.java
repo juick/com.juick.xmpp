@@ -70,7 +70,7 @@ public abstract class Stream {
     private boolean loggedIn;
     private Instant created;
     private Instant updated;
-    private String streamId;
+    protected String streamId;
 
     public Stream(final Jid from, final Jid to, final InputStream is, final OutputStream os) throws XmlPullParserException {
         this.from = from;
