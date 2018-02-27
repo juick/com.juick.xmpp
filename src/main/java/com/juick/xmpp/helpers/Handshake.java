@@ -1,6 +1,6 @@
-package com.juick.xmpp.extensions;
+package com.juick.xmpp.helpers;
 
-import com.juick.xmpp.utils.XmlUtils;
+import com.juick.xmpp.util.XmlUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 

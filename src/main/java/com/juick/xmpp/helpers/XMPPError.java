@@ -15,21 +15,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.juick.xmpp.extensions;
+package com.juick.xmpp.helpers;
 
-import com.juick.xmpp.StanzaChild;
-import com.juick.xmpp.utils.XmlUtils;
 import org.apache.commons.text.StringEscapeUtils;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
 
 /**
  *
  * @author ugnich
  */
-public class XMPPError implements StanzaChild {
+public class XMPPError {
 
     public static final class Type {
 
@@ -39,44 +33,15 @@ public class XMPPError implements StanzaChild {
         public static final String modify = "modify";
         public static final String wait = "wait";
     }
-    public final static String XMLNS = "";
-    public final static String TagName = "error";
+    private final static String TagName = "error";
     public String by = null;
-    public String type = null;
-    public String condition = null;
-    public String text = null;
-
-    public XMPPError() {
-    }
+    private String type;
+    private String condition;
+    private String text = null;
 
     public XMPPError(String type, String condition) {
         this.type = type;
         this.condition = condition;
-    }
-
-    @Override
-    public String getXMLNS() {
-        return XMLNS;
-    }
-
-    @Override
-    public XMPPError parse(XmlPullParser parser) throws XmlPullParserException, IOException {
-        XMPPError err = new XMPPError();
-        err.by = parser.getAttributeValue(null, "by");
-        err.type = parser.getAttributeValue(null, "type");
-
-        while (parser.next() == XmlPullParser.START_TAG) {
-            final String tag = parser.getName();
-            final String xmlns = parser.getNamespace();
-            if (xmlns.equals("urn:ietf:params:xml:ns:xmpp-stanzas")) {
-                err.condition = tag;
-                err.text = XmlUtils.getTagText(parser);
-            } else {
-                XmlUtils.skip(parser);
-            }
-        }
-
-        return err;
     }
 
     @Override

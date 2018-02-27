@@ -15,9 +15,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.juick.xmpp.extensions;
+package com.juick.xmpp.helpers;
 
-import com.juick.xmpp.utils.XmlUtils;
+import com.juick.xmpp.util.XmlUtils;
 import java.io.IOException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;

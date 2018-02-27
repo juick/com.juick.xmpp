@@ -48,9 +48,7 @@ public class StreamComponent extends Stream {
         String sfrom = parser.getAttributeValue(null, "from");
         if (sfrom == null || !sfrom.equals(to.toString())) {
             setLoggedIn(false);
-            for (StreamListener listener : listenersStream) {
-                listener.fail(new IOException("stream:stream, failed authentication"));
-            }
+            streamHandler.fail(new IOException("stream:stream, failed authentication"));
             return;
         }
 
@@ -60,12 +58,10 @@ public class StreamComponent extends Stream {
         if (parser.getName().equals("handshake")) {
             parser.next();
             setLoggedIn(true);
-            listenersStream.forEach(StreamListener::ready);
+            streamHandler.ready();
         } else {
             setLoggedIn(false);
-            for (StreamListener listener : listenersStream) {
-                listener.fail(new IOException(String.format("%s, failed authentication", parser.getName())));
-            }
+            streamHandler.fail(new IOException(String.format("%s, failed authentication", parser.getName())));
         }
     }
 }

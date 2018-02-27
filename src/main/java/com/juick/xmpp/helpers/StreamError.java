@@ -1,17 +1,17 @@
-package com.juick.xmpp.extensions;
+package com.juick.xmpp.helpers;
 
-import com.juick.xmpp.utils.XmlUtils;
+import com.juick.xmpp.util.XmlUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 
+import static com.juick.xmpp.StreamNamespaces.NS_XMPP_STREAMS;
+
 /**
  * Created by vitalyster on 03.02.2017.
  */
 public class StreamError {
-
-    public static final String XMLNS = "urn:ietf:params:xml:ns:xmpp-streams";
 
     private String condition;
 
@@ -26,8 +26,8 @@ public class StreamError {
         while (parser.next() == XmlPullParser.START_TAG) {
             final String tag = parser.getName();
             final String xmlns = parser.getNamespace();
-            if (xmlns.equals(XMLNS)) {
-                streamError.setCondition(tag);
+            if (xmlns.equals(NS_XMPP_STREAMS)) {
+                streamError.condition = tag;
             } else {
                 XmlUtils.skip(parser);
             }
@@ -39,12 +39,8 @@ public class StreamError {
         return condition;
     }
 
-    public void setCondition(String condition) {
-        this.condition = condition;
-    }
-
     @Override
     public String toString() {
-        return String.format("<stream:error><%s xmlns='%s'/></stream:error>", condition, XMLNS);
+        return String.format("<stream:error><%s xmlns='%s'/></stream:error>", condition, NS_XMPP_STREAMS);
     }
 }

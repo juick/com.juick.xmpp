@@ -1,7 +1,7 @@
 package com.juick.xmpp;
 
-import com.juick.xmpp.extensions.Handshake;
-import com.juick.xmpp.extensions.XMPPError;
+import com.juick.xmpp.helpers.Handshake;
+import com.juick.xmpp.helpers.XMPPError;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.xmlpull.v1.XmlPullParserException;
 import rocks.xmpp.addr.Jid;
@@ -11,12 +11,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
+import static com.juick.xmpp.StreamNamespaces.NS_COMPONENT_ACCEPT;
+import static com.juick.xmpp.StreamNamespaces.NS_STREAM;
+
 /**
  * Created by vitalyster on 30.01.2017.
  */
 public class StreamComponentServer extends Stream {
-
-    public static final String NS_COMPONENT_ACCEPT = "jabber:component:accept";
 
     private String streamId, secret;
 
@@ -39,8 +40,7 @@ public class StreamComponentServer extends Stream {
             throw new IOException("invalid stream");
         }
         Jid domain = Jid.of(parser.getAttributeValue(null, "to"));
-        if (listenersStream.stream().anyMatch(l ->
-                l.filter(null, domain))) {
+        if (streamHandler.filter(null, domain)) {
             send(new XMPPError(XMPPError.Type.cancel, "forbidden").toString());
             throw new IOException("invalid domain");
         }
@@ -53,12 +53,10 @@ public class StreamComponentServer extends Stream {
         setLoggedIn(authenticated);
         if (!authenticated) {
             send(new XMPPError(XMPPError.Type.cancel, "not-authorized").toString());
-            for (StreamListener streamListener : listenersStream) {
-                streamListener.fail(new IOException("stream:stream, failed authentication"));
-            }
+            streamHandler.fail(new IOException("stream:stream, failed authentication"));
             return;
         }
         send(new Handshake().toString());
-        listenersStream.forEach(StreamListener::ready);
+        streamHandler.ready();
     }
 }
