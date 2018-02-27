@@ -71,6 +71,7 @@ public abstract class Stream {
     private Instant created;
     private Instant updated;
     protected String streamId;
+    private boolean secured;
 
     public Stream(final Jid from, final Jid to, final InputStream is, final OutputStream os) throws XmlPullParserException {
         this.from = from;
@@ -270,5 +271,13 @@ public abstract class Stream {
     }
     public String getStreamId() {
         return streamId;
+    }
+
+    public boolean isSecured() {
+        return secured;
+    }
+
+    public void setSecured(boolean secured) {
+        this.secured = secured;
     }
 }
